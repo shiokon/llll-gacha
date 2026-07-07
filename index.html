@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>蓮ノ空カードアトリエ — Hasunosora Card Atelier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Jost:ital,wght@0,300;0,400;0,600;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="aurora"><i></i><i></i><i></i></div>
+<canvas id="petals"></canvas>
+
+<header id="topbar">
+  <div class="brand" data-nav="home">
+    <span class="brand-lotus">✿</span>
+    <span class="brand-txt"><b>蓮ノ空</b><small>CARD ATELIER</small></span>
+  </div>
+  <nav id="nav">
+    <button class="nav-btn active" data-nav="home"><span class="nv-ico">⌂</span>ホーム</button>
+    <button class="nav-btn" data-nav="gacha"><span class="nv-ico">✦</span>ガチャ</button>
+    <button class="nav-btn" data-nav="gallery"><span class="nv-ico">❏</span>ギャラリー</button>
+    <button class="nav-btn" data-nav="collection"><span class="nv-ico">♡</span>コレクション</button>
+    <button class="nav-btn" data-nav="members"><span class="nv-ico">☘</span>メンバー</button>
+    <button class="nav-btn" data-nav="live"><span class="nv-ico">♬</span>ライブ</button>
+    <button class="nav-btn" data-nav="jukebox"><span class="nv-ico">♪</span>ジュークボックス</button>
+  </nav>
+  <div class="top-right">
+    <div id="wallet" title="ペタルコイン（ダブり変換）"><span class="coin">❀</span><b id="coin-count">0</b></div>
+    <button id="bgm-toggle" class="icon-btn" title="BGM">♪</button>
+    <button id="se-toggle" class="icon-btn" title="効果音">◉</button>
+    <button id="reset-btn" class="icon-btn" title="データリセット">↺</button>
+  </div>
+</header>
+
+<main id="view"></main>
+
+<footer id="foot">
+  <p>非公式ファンメイドビューア — Link! Like! ラブライブ！ 蓮ノ空女学院スクールアイドルクラブ assets © their owners.
+  スタイル・ムード等の一部表記は推定です。</p>
+</footer>
+
+<!-- card detail modal -->
+<div id="modal" class="hidden"><div id="modal-body"></div></div>
+
+<!-- gacha ceremony overlay -->
+<div id="ceremony" class="hidden"></div>
+
+<!-- audio player dock (jukebox) -->
+<div id="dock" class="hidden">
+  <img id="dock-jacket" alt="">
+  <div class="dock-mid">
+    <div id="dock-title">—</div>
+    <div class="dock-bar"><div id="dock-progress"></div></div>
+  </div>
+  <button id="dock-play" class="icon-btn">▶</button>
+  <button id="dock-close" class="icon-btn">✕</button>
+</div>
+
+<div id="toast-wrap"></div>
+
+<script src="data/db.js"></script>
+<script src="js/config.js"></script>
+<script src="js/util.js"></script>
+<script src="js/gallery.js"></script>
+<script src="js/gacha.js"></script>
+<script src="js/live.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

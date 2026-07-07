@@ -1,0 +1,13 @@
+# Media assets are NOT stored in the repo — they are served from Cloudflare R2.
+# See DEPLOY.md. (Local play uses this folder directly; keep it on your PC.)
+assets/
+
+__pycache__/
+tools/imgwork/
+tools/audwork/
+
+Thumbs.db
+desktop.ini
+
+DEPLOY.md
+README.md

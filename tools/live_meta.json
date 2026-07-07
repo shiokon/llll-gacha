@@ -1,0 +1,946 @@
+{
+"10310301": {
+"bpm": 220,
+"tag": "fortunemovie_bpm220"
+},
+"10310601": {
+"bpm": 158,
+"tag": "genyouyakou_bpm158"
+},
+"10310701": {
+"bpm": 132,
+"tag": "kawaii_no_susume_bpm132"
+},
+"10310401": {
+"bpm": 175,
+"tag": "reflection_in_the_mirror_bpm175"
+},
+"10310201": {
+"bpm": 162,
+"tag": "eiennno_euphoria_bpm162"
+},
+"10310801": {
+"bpm": 102,
+"tag": "jibundiary_bpm102"
+},
+"10310501": {
+"bpm": 104,
+"tag": "oukaranman_bpm104"
+},
+"10310101": {
+"bpm": 162,
+"tag": "dream_believers_bpm162_4ver"
+},
+"10310901": {
+"bpm": 162,
+"tag": "eiennno_euphoria_bpm162_6ver"
+},
+"10311001": {
+"bpm": 129,
+"tag": "hakuchu_a_la_mode_bpm129"
+},
+"10311101": {
+"bpm": 92,
+"tag": "parallel_dancer_bpm92"
+},
+"10311301": {
+"bpm": 156,
+"tag": "identity_bpm156"
+},
+"10311201": {
+"bpm": 162,
+"tag": "dream_believers_bpm162_6ver"
+},
+"10311401": {
+"bpm": 160,
+"tag": "legato_bpm160"
+},
+"10311501": {
+"bpm": 140,
+"tag": "senpenbanka_bpm140"
+},
+"10311601": {
+"bpm": 170,
+"tag": "yup!yup!yup!_bpm170"
+},
+"10311701": {
+"bpm": 108,
+"tag": "sugarmelt_bpm108_136"
+},
+"10311901": {
+"bpm": 173,
+"tag": "happy_shijosyugi_bpm173"
+},
+"10311801": {
+"bpm": 183,
+"tag": "link_to_the_future_bpm183"
+},
+"10320101": {
+"bpm": 167,
+"tag": "preserved_roses_bpm167"
+},
+"10312001": {
+"bpm": 152,
+"tag": "mahara_jamboree_bpm152"
+},
+"10320201": {
+"bpm": 143,
+"tag": "kokoroyohou_bpm143"
+},
+"10320301": {
+"bpm": 190,
+"tag": "dance_robot_dance_bpm190"
+},
+"10320401": {
+"bpm": 147,
+"tag": "mihatanomotoni_bpm147"
+},
+"10320501": {
+"bpm": 233,
+"tag": "diamondhappy_bpm233"
+},
+"10330101": {
+"bpm": 180,
+"tag": "tokimeki_runners_bpm180"
+},
+"10330201": {
+"bpm": 182,
+"tag": "kiminokokoroha_kagayaiterukai_bpm182"
+},
+"10410101": {
+"bpm": 162,
+"tag": "dream_believers_bpm162_104ver"
+},
+"10410201": {
+"bpm": 147,
+"tag": "sparkly_spot_104ver_bpm147"
+},
+"10410301": {
+"bpm": 159,
+"tag": "365days_bpm159"
+},
+"10410401": {
+"bpm": 140,
+"tag": "senpenbanka_104ver_bpm140"
+},
+"10410501": {
+"bpm": 172,
+"tag": "bloomthesmile_bloomthedream_bpm172"
+},
+"10410601": {
+"bpm": 162,
+"tag": "eiennno_euphoria_104ver_bpm162"
+},
+"10410701": {
+"bpm": 158,
+"tag": "genyouyakou_104ver_bpm158"
+},
+"10410801": {
+"bpm": 129,
+"tag": "hakuchu_a_la_mode_104ver_bpm129"
+},
+"10410901": {
+"bpm": 126,
+"tag": "fanfare_bpm126_220"
+},
+"10411001": {
+"bpm": 152,
+"tag": "mahara_jamboree_104ver_bpm152"
+},
+"10411101": {
+"bpm": 183,
+"tag": "link_to_the_future_104ver_bpm183"
+},
+"10411201": {
+"bpm": 198,
+"tag": "hanamusubi_bpm198"
+},
+"10411301": {
+"bpm": 108,
+"tag": "sugarmelt_104ver_bpm108_136"
+},
+"10411401": {
+"bpm": 190,
+"tag": "zenhouikyun_bpm190"
+},
+"10411501": {
+"bpm": 168,
+"tag": "chu_chocolate_bpm168"
+},
+"10411601": {
+"bpm": 175,
+"tag": "bege_love_rou_bpm175"
+},
+"10411701": {
+"bpm": 132,
+"tag": "oideyo_isikawadaikankou_bpm132"
+},
+"10411801": {
+"bpm": 128,
+"tag": "ittan_bpm128"
+},
+"10412001": {
+"bpm": 108,
+"tag": "loveit_wonderful_trip_bpm108"
+},
+"10411901": {
+"bpm": 162,
+"tag": "dream_believers_sakuraver_bpm162"
+},
+"10420101": {
+"bpm": 167,
+"tag": "miracle_shopping_bpm167"
+},
+"10420201": {
+"bpm": 153,
+"tag": "rouge_no_dengon_bpm153"
+},
+"10420301": {
+"bpm": 95,
+"tag": "welcome_bpm95_100"
+},
+"10420401": {
+"bpm": 175,
+"tag": "connect_bpm175"
+},
+"10430101": {
+"bpm": 170,
+"tag": "natsuiro_egao_bpm170"
+},
+"10430201": {
+"bpm": 111,
+"tag": "tokonatsu_sunshine_bpm111_155"
+},
+"10510101": {
+"bpm": 162,
+"tag": "dream_believers_105ver_bpm162"
+},
+"10510201": {
+"bpm": 198,
+"tag": "celebration_bpm198"
+},
+"10510301": {
+"bpm": 176,
+"tag": "chili_con_carne_bpm176"
+},
+"10510401": {
+"bpm": 138,
+"tag": "hello_new_dream_bpm138"
+},
+"10510601": {
+"bpm": 190,
+"tag": "blast_bpm190"
+},
+"10510501": {
+"bpm": 165,
+"tag": "shiawaseno_ribbon_bpm165"
+},
+"20310101": {
+"bpm": 174,
+"tag": "mix_shake!!_bpm174"
+},
+"20310201": {
+"bpm": 220,
+"tag": "tsukimakase_bpm220"
+},
+"20310301": {
+"bpm": 135,
+"tag": "holidayholiday_bpm135"
+},
+"20310401": {
+"bpm": 130,
+"tag": "mirage_voyage_bpm130"
+},
+"20310501": {
+"bpm": 188,
+"tag": "natsumekipain_bpm188"
+},
+"20310601": {
+"bpm": 197,
+"tag": "dododo_bpm197"
+},
+"20310701": {
+"bpm": 138,
+"tag": "sugaono_pixel_bpm138"
+},
+"20310801": {
+"bpm": 180,
+"tag": "nonfiction_heroshow_bpm180"
+},
+"20310901": {
+"bpm": 148,
+"tag": "runway_bpm148"
+},
+"20311001": {
+"bpm": 176,
+"tag": "seisyun_no_rinkaku_bpm176"
+},
+"20311101": {
+"bpm": 177,
+"tag": "tsubasa_liberte_bpm177"
+},
+"20311201": {
+"bpm": 128,
+"tag": "tensainanokamo_sirenai_bpm128"
+},
+"20311301": {
+"bpm": 170,
+"tag": "special_thanks_bpm170"
+},
+"20311401": {
+"bpm": 79,
+"tag": "milk_bpm79"
+},
+"20311501": {
+"bpm": 76,
+"tag": "colorfulness_bpm76"
+},
+"20311601": {
+"bpm": 180,
+"tag": "bangyou_gravity_bpm180"
+},
+"20311801": {
+"bpm": 187,
+"tag": "step_up_bpm187"
+},
+"20311701": {
+"bpm": 79,
+"tag": "dakishimeru_hanabira_bpm79"
+},
+"20320101": {
+"bpm": 170,
+"tag": "sobakasu_bpm170"
+},
+"20320201": {
+"bpm": 148,
+"tag": "bibahapi_bpm148"
+},
+"20320301": {
+"bpm": 150,
+"tag": "neraiuchi_bpm150"
+},
+"20320401": {
+"bpm": 154,
+"tag": "momoirokataomoi_bpm154"
+},
+"20320601": {
+"bpm": 127,
+"tag": "happy_synthesizer_bpm127"
+},
+"20320501": {
+"bpm": 145,
+"tag": "iarufanclub_bpm145"
+},
+"20320701": {
+"bpm": 135,
+"tag": "kyofu_allback_bpm135"
+},
+"20320801": {
+"bpm": 170,
+"tag": "change_bpm170"
+},
+"20330101": {
+"bpm": 210,
+"tag": "bokuranolive_kimitonolife_bpm210"
+},
+"20330201": {
+"bpm": 164,
+"tag": "hajimariha_kiminosora_bpm164"
+},
+"20410101": {
+"bpm": 202,
+"tag": "identity_104ver_bpm202"
+},
+"20410201": {
+"bpm": 174,
+"tag": "mix_shake!!_104ver_bpm174"
+},
+"20410301": {
+"bpm": 180,
+"tag": "nonfiction_heroshow_104ver_bpm180"
+},
+"20410401": {
+"bpm": 190,
+"tag": "mirakuri_ation_bpm190"
+},
+"20410501": {
+"bpm": 145,
+"tag": "aokuharuka_bpm145"
+},
+"20410601": {
+"bpm": 130,
+"tag": "mirage_voyage_104ver_bpm130"
+},
+"20410701": {
+"bpm": 171,
+"tag": "proof_bpm171"
+},
+"20410801": {
+"bpm": 188,
+"tag": "natsumekipain_104ver_bpm188"
+},
+"20410901": {
+"bpm": 135,
+"tag": "holidayholiday_104ver_bpm135"
+},
+"20411001": {
+"bpm": 138,
+"tag": "sugaono_pixel_104ver_bpm138"
+},
+"20411101": {
+"bpm": 197,
+"tag": "dododo_104ver_bpm197"
+},
+"20411201": {
+"bpm": 135,
+"tag": "birdcage_bpm135"
+},
+"20411301": {
+"bpm": 177,
+"tag": "tsubasa_liberte_104ver_bpm177"
+},
+"20411401": {
+"bpm": 176,
+"tag": "seisyun_no_rinkaku_104ver_bpm176"
+},
+"20411501": {
+"bpm": 128,
+"tag": "tensainanokamo_sirenai_104ver_bpm128"
+},
+"20411601": {
+"bpm": 170,
+"tag": "key_of_like_bpm170"
+},
+"20411701": {
+"bpm": 138,
+"tag": "yumewazurai_bpm138"
+},
+"20411801": {
+"bpm": 180,
+"tag": "remu_bpm180"
+},
+"20411901": {
+"bpm": 148,
+"tag": "koigeshiki_syowaroman_bpm148"
+},
+"20412101": {
+"bpm": 146,
+"tag": "asterism_bpm146"
+},
+"20420101": {
+"bpm": 120,
+"tag": "bibbidiba_bpm120"
+},
+"20412001": {
+"bpm": 130,
+"tag": "itumoitumademo_bpm130"
+},
+"20420201": {
+"bpm": 220,
+"tag": "kyukurarin_bpm220"
+},
+"20430101": {
+"bpm": 173,
+"tag": "snow_halation_bpm173"
+},
+"20430201": {
+"bpm": 142,
+"tag": "neosky_neomap_bpm142"
+},
+"20510101": {
+"bpm": 130,
+"tag": "wawo_bpm130"
+},
+"20510201": {
+"bpm": 190,
+"tag": "yappa_tenshi_bpm190"
+},
+"20510301": {
+"bpm": 165,
+"tag": "37.5c_no_fantasy_bpm165"
+},
+"20520101": {
+"bpm": 128,
+"tag": "rondo_bpm128"
+},
+"20520201": {
+"bpm": 170,
+"tag": "romio_to_cinderella_bpm170"
+},
+"20520301": {
+"bpm": 76,
+"tag": "gekkou_bpm76"
+},
+"20530101": {
+"bpm": 200,
+"tag": "aozora_jumping_heart_bpm200"
+},
+"30310101": {
+"bpm": 154,
+"tag": "on_your_mark_bpm154"
+},
+"30310201": {
+"bpm": 160,
+"tag": "suisaisekai_bpm160"
+},
+"30310301": {
+"bpm": 150,
+"tag": "awoke_bpm150"
+},
+"30310401": {
+"bpm": 176,
+"tag": "sparkly_spot_bpm176"
+},
+"30310501": {
+"bpm": 104,
+"tag": "kibouteki_prizm_bpm104_131"
+},
+"30310601": {
+"bpm": 97,
+"tag": "scapegoat_bpm97"
+},
+"30310701": {
+"bpm": 136,
+"tag": "deepness_bpm136"
+},
+"30310801": {
+"bpm": 110,
+"tag": "tragicdrops_bpm110"
+},
+"30310901": {
+"bpm": 160,
+"tag": "kokon_touzai_bpm160"
+},
+"30311001": {
+"bpm": 118,
+"tag": "zanyo_bpm118"
+},
+"30311101": {
+"bpm": 150,
+"tag": "take_it_over_bpm150"
+},
+"30311201": {
+"bpm": 174,
+"tag": "knot_bpm174"
+},
+"30311301": {
+"bpm": 122,
+"tag": "trick_and_cute_bpm122"
+},
+"30311401": {
+"bpm": 90,
+"tag": "dear_my_future_bpm90"
+},
+"30311501": {
+"bpm": 164,
+"tag": "asunosorano_bokutachihe_bpm164"
+},
+"30311701": {
+"bpm": 127,
+"tag": "aotoshabon_bpm127"
+},
+"30311601": {
+"bpm": 126,
+"tag": "ameiro_bpm126"
+},
+"30311801": {
+"bpm": 130,
+"tag": "pleasure_feather_bpm130"
+},
+"30311901": {
+"bpm": 152,
+"tag": "ishin_denshin_bpm152"
+},
+"30320101": {
+"bpm": 133,
+"tag": "shinai_bpm133"
+},
+"30320201": {
+"bpm": 162,
+"tag": "lostone_no_doukoku_bpm162"
+},
+"30320301": {
+"bpm": 180,
+"tag": "namaenonai_kaibutsu_bpm180"
+},
+"30320401": {
+"bpm": 102,
+"tag": "villain_bpm102"
+},
+"30320501": {
+"bpm": 130,
+"tag": "ifudoudou_bpm130"
+},
+"30320601": {
+"bpm": 170,
+"tag": "syukufuku_bpm170"
+},
+"30320701": {
+"bpm": 130,
+"tag": "luckytrain_bpm130"
+},
+"30410101": {
+"bpm": 154,
+"tag": "on_your_mark_104ver_bpm154"
+},
+"30410201": {
+"bpm": 137,
+"tag": "reflection_in_the_mirror_104ver_bpm137"
+},
+"30410301": {
+"bpm": 160,
+"tag": "kokon_touzai_104ver_bpm160"
+},
+"30410401": {
+"bpm": 110,
+"tag": "tragicdrops_104ver_bpm110"
+},
+"30410501": {
+"bpm": 130,
+"tag": "ladybug_bpm130"
+},
+"30410601": {
+"bpm": 174,
+"tag": "knot_104ver_bpm174"
+},
+"30410701": {
+"bpm": 140,
+"tag": "tsukiyomi_kurage_bpm140"
+},
+"30410801": {
+"bpm": 152,
+"tag": "ishin_denshin_104ver_bpm152"
+},
+"30410901": {
+"bpm": 136,
+"tag": "deepness_104ver_bpm136"
+},
+"30411001": {
+"bpm": 104,
+"tag": "kibouteki_prizm_104ver_bpm104_131"
+},
+"30411101": {
+"bpm": 122,
+"tag": "trick_and_cute_104ver_bpm122"
+},
+"30411201": {
+"bpm": 150,
+"tag": "take_it_over_104ver_bpm150"
+},
+"30411301": {
+"bpm": 140,
+"tag": "now_or_never_bpm140"
+},
+"30411401": {
+"bpm": 138,
+"tag": "jousyou_kiryu_bpm138"
+},
+"30411501": {
+"bpm": 150,
+"tag": "awoke_104ver_bpm150"
+},
+"30411601": {
+"bpm": 160,
+"tag": "suisaisekai_104ver_bpm160"
+},
+"30411701": {
+"bpm": 191,
+"tag": "aurora_flower_bpm191"
+},
+"30411801": {
+"bpm": 140,
+"tag": "gekkabijin_bpm140"
+},
+"30412001": {
+"bpm": 133,
+"tag": "compass_bpm133"
+},
+"30411901": {
+"bpm": 96,
+"tag": "kakurenbosiyou_bpm96"
+},
+"30412101": {
+"bpm": 130,
+"tag": "mahara_jamboree2_bpm130"
+},
+"30412201": {
+"bpm": 136,
+"tag": "hajihajinseino_kakisute_bpm136"
+},
+"30420101": {
+"bpm": 147,
+"tag": "thisgame_bpm147"
+},
+"30420201": {
+"bpm": 135,
+"tag": "startliner_bpm135"
+},
+"30420301": {
+"bpm": 171,
+"tag": "zattou_bokuranomachi_bpm171"
+},
+"30430101": {
+"bpm": 135,
+"tag": "daydream_warrior_bpm135"
+},
+"30510101": {
+"bpm": 173,
+"tag": "edelied_bpm173"
+},
+"30510201": {
+"bpm": 134,
+"tag": "ampere_bpm134"
+},
+"30510301": {
+"bpm": 152,
+"tag": "retrofuture_bpm152"
+},
+"30510401": {
+"bpm": 178,
+"tag": "beproud_bpm178"
+},
+"30510501": {
+"bpm": 160,
+"tag": "imymayday_bpm160"
+},
+"30510601": {
+"bpm": 142,
+"tag": "izayoi_selene_bpm142"
+},
+"30510701": {
+"bpm": 185,
+"tag": "idome_bpm185"
+},
+"40510101": {
+"bpm": 168,
+"tag": "tenchireimei_bpm168"
+},
+"40510201": {
+"bpm": 130,
+"tag": "fruit_punch_bpm130"
+},
+"40510301": {
+"bpm": 170,
+"tag": "taiyodeare_bpm170"
+},
+"40510401": {
+"bpm": 128,
+"tag": "tohyo_star_bpm128"
+},
+"40510501": {
+"bpm": 156,
+"tag": "veryverycoconatsu_bpm156"
+},
+"40510601": {
+"bpm": 162,
+"tag": "myluckyclover_bpm162"
+},
+"40510701": {
+"bpm": 150,
+"tag": "diamondz_bpm150"
+},
+"40510801": {
+"bpm": 176,
+"tag": "atarayohanabi_bpm176_130_125_126"
+},
+"40510901": {
+"bpm": 135,
+"tag": "bluemoment_bpm135"
+},
+"40511101": {
+"bpm": 188,
+"tag": "natsumekipain_105ver_bpm188"
+},
+"40511001": {
+"bpm": 104,
+"tag": "fusioncrust_bpm104"
+},
+"40511201": {
+"bpm": 200,
+"tag": "nyaosignyal_bpm200"
+},
+"40511301": {
+"bpm": 128,
+"tag": "heartniq_bpm128"
+},
+"40511401": {
+"bpm": 165,
+"tag": "katayokuno_tribaga_bpm165"
+},
+"40511501": {
+"bpm": 175,
+"tag": "drive_spade crazy_bpm175"
+},
+"40511601": {
+"bpm": 112,
+"tag": "issyouni_yumegasakuyouni_bpm112_85_75"
+},
+"40511701": {
+"bpm": 140,
+"tag": "otomesikasyu_bpm140"
+},
+"40511801": {
+"bpm": 203,
+"tag": "vitalsigns_bpm203"
+},
+"40511901": {
+"bpm": 150,
+"tag": "hajimarino_haoto_bpm150"
+},
+"40512001": {
+"bpm": 172,
+"tag": "garandflash_bpm172"
+},
+"40512101": {
+"bpm": 160,
+"tag": "heiseigals_bpm160"
+},
+"40512201": {
+"bpm": 138,
+"tag": "cho_toutoilove_bpm138"
+},
+"40512301": {
+"bpm": 171,
+"tag": "theater_ikizama_bpm171"
+},
+"40512501": {
+"bpm": 132,
+"tag": "nεwblack_bpm132"
+},
+"40512401": {
+"bpm": 140,
+"tag": "ichigomilklove_bpm140"
+},
+"40512601": {
+"bpm": 149,
+"tag": "charming_na_hanatabawo_bpm149"
+},
+"40512701": {
+"bpm": 175,
+"tag": "hip_hip_hooray_bpm175"
+},
+"40512801": {
+"bpm": 110,
+"tag": "reijomob_bpm110_162"
+},
+"40513001": {
+"bpm": 158,
+"tag": "sayoshigure_bpm158"
+},
+"40512901": {
+"bpm": 130,
+"tag": "yukimau_sorato_nibyounoeiein_bpm130"
+},
+"40513201": {
+"bpm": 154,
+"tag": "on_your_mark_102ver_bpm154"
+},
+"40513101": {
+"bpm": 182,
+"tag": "haromegusanka_bpm182"
+},
+"40513301": {
+"bpm": 112,
+"tag": "echoes_beyond_bpm112"
+},
+"40513401": {
+"bpm": 130,
+"tag": "joker_bpm130"
+},
+"40513501": {
+"bpm": 198,
+"tag": "reboot_bpm198"
+},
+"40513601": {
+"bpm": 142,
+"tag": "tomodachini_narerubasyo_bpm142"
+},
+"40513701": {
+"bpm": 178,
+"tag": "fushiginokimito_library_bpm178"
+},
+"40513801": {
+"bpm": 190,
+"tag": "aisy_bpm190"
+},
+"40513901": {
+"bpm": 118,
+"tag": "edelinien_bpm118"
+},
+"40514001": {
+"bpm": 118,
+"tag": "imakakomiraino_sangensyoku_bpm118_158"
+},
+"40514101": {
+"bpm": 162,
+"tag": "dream_believers_bgpver_bpm162"
+},
+"40514201": {
+"bpm": 178,
+"tag": "fushiginokimito_library_bgpver_bpm178"
+},
+"40514301": {
+"bpm": 190,
+"tag": "aisy_bgpver_bpm190"
+},
+"40514401": {
+"bpm": 142,
+"tag": "tomodachini_narerubasyo_bgpver_bpm142"
+},
+"40520101": {
+"bpm": 205,
+"tag": "telepathy_bpm205"
+},
+"40520201": {
+"bpm": 180,
+"tag": "bow_and_arrow_bpm180"
+},
+"40520301": {
+"bpm": 169,
+"tag": "mouichido_ruminous_bpm169"
+},
+"40520401": {
+"bpm": 204,
+"tag": "hitosizuku_bpm204"
+},
+"40520501": {
+"bpm": 124,
+"tag": "kimigainakucha_bpm124"
+},
+"40520601": {
+"bpm": 80,
+"tag": "firebird_bpm80_70_58_66_150"
+},
+"40520701": {
+"bpm": 123,
+"tag": "annani_issyodattanoni_bpm123"
+},
+"40520801": {
+"bpm": 170,
+"tag": "kimagure_romantic_bpm170"
+},
+"40520901": {
+"bpm": 110,
+"tag": "blessing_bpm110"
+},
+"40530101": {
+"bpm": 180,
+"tag": "nijiiro_passions_bpm180"
+},
+"40530201": {
+"bpm": 132,
+"tag": "icecream_bpm132"
+},
+"40530301": {
+"bpm": 178,
+"tag": "start_truedreams_bpm178"
+},
+"40530401": {
+"bpm": 136,
+"tag": "shocking_party_bpm136"
+},
+"40530501": {
+"bpm": 196,
+"tag": "bokuraha_imanonakade_bpm196"
+}
+}
