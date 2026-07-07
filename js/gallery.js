@@ -274,23 +274,13 @@ const Detail = {
   },
 
   voiceBlock(c){
-    /* [file, label] pairs; m-rarity cards use their character's line bank */
-    let items = [];
-    if(c.vo && c.vo.length){
-      const counts = {};
-      items = c.vo.map(v => {
-        const m = v.match(/^\d+_([a-z]+)_(\d+)$/);
-        const kind = m ? m[1] : "voice";
-        counts[kind] = (counts[kind]||0) + 1;
-        return [v, (VO_KIND[kind]||kind) + (counts[kind] > 1 ? ` ${counts[kind]}` : "")];
-      });
-    } else if(c.mvo){
-      items = M_VO.map(([key, label]) => [`m${c.mvo}_${key}`, label]);
-    }
+    /* gacha voicelines only — [file, label] pairs */
+    const items = (c.vo || []).filter(v => v.includes("_gacha_"))
+      .map((v, i, arr) => [v, "ガチャ" + (arr.length > 1 ? ` ${i+1}` : "")]);
     if(!items.length) return null;
     const wrap = h("div", {style:"margin-top:18px"});
     wrap.append(h("div",{style:"font-size:11px;letter-spacing:.2em;color:var(--sky);margin-bottom:8px"},
-      "VOICE" + (c.mvo ? "（キャラクター共通）" : "")));
+      "VOICE"));
     const row = h("div", {class:"voice-row"});
     for(const [v, label] of items){
       const btn = h("button", {class:"voice-btn", onclick:e => {

@@ -17,7 +17,6 @@ const AUD = {
   voice: n => `${ASSET}voice/${n}.m4a`,
   bgm:   n => `${ASSET}bgm/${n}.m4a`,
   live:  n => `${ASSET}live/${n}.m4a`,
-  ost:   n => `${ASSET}ost/${n}.m4a`,
 };
 
 const RAR = {
@@ -36,18 +35,6 @@ const STYLE_C = {1:"#ff9ec6",2:"#ffd066",3:"#8ee5c0",4:"#b48cff"};
 const MOOD = {1:"ハッピー",2:"ニュートラル",3:"メロウ"};
 const MOOD_C = {1:"#ffb066",2:"#8ee5c0",3:"#8fa8ff"};
 const LIMITED = {0:"恒常",1:"期間限定",2:"フェス限定",3:"コラボ",4:"イベント",5:"スペシャル",6:"リンクラ限定",7:"限定"};
-const VO_KIND = {
-  gacha:"ガチャ", livestart:"ライブ開始", message:"メッセージ",
-  skill:"スキル", spappeal:"アピール", training:"特訓", duet:"デュエット",
-};
-/* m-rarity cards have no per-card acb; they use per-character line banks
-   (vo_chara_m{charId} → voice/m{charId}_{kind}.m4a) */
-const M_VO = [
-  ["clear1_0001","ライブクリア①"], ["clear2_0001","ライブクリア②"], ["clear3_0001","ライブクリア③"],
-  ["spduet_0001","SPデュエット①"], ["spduet_0002","SPデュエット②"], ["spduet_0003","SPデュエット③"],
-  ["sectionpositive_0001","セクション好調"], ["skillpositive_0001","スキル発動"],
-  ["stylelv_0001","スタイルLv UP"], ["stylemax_0001","スタイルMAX"], ["starrank_0001","スターランクUP"],
-];
 const UNIT_C = {101:"#f5b1cc",102:"#8fa8d8",103:"#f7d277",105:"#b48cff",100:"#9aa3c7",104:"#9aa3c7",201:"#9aa3c7"};
 
 /* quick DB indexes */
@@ -60,7 +47,7 @@ const realBanners = () => DB.banners.filter(b => b.start <= TODAY);
 const futureBanners = () => DB.banners.filter(b => b.start > TODAY);
 
 /* ───── persistent state ───── */
-const SAVE_KEY = "hasu_atelier_v1";
+const SAVE_KEY = "hasu_gacha_v1";
 const State = {
   owned:{}, coins:0, pulls:0, pity:{}, history:[], newFlags:{},
   live:{}, liveUnit:null, lgSpeed:2,

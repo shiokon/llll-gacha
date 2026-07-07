@@ -128,9 +128,6 @@ const App = {
       }, 500);
     } else if(hash === "test-live"){
       this.go("live");
-    } else if(hash === "test-ost"){
-      Jukebox.tab = "ost";
-      this.go("jukebox");
     } else if(hash === "test-livegame"){
       this.go("live");
       setTimeout(() => {

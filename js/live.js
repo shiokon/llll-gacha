@@ -3,12 +3,8 @@
    (raw-deflate JSON, converted to data/charts/{musicId}.js by build_data.py).
    Notes live on a continuous 0..59 bar split into 4 key zones (D/F/J/K):
    pink taps, green flicks (a tap counts), blue holds incl. sliding polylines.
-   Full songs from bgm_live_*.acb, judgement SEs from rhythm.acb,
-   per-character reaction voices from vo_chara_m*.acb. */
+   Full songs from bgm_live_*.acb, judgement SEs from rhythm.acb. */
 "use strict";
-
-/* characters with a vo_chara_m line bank on disk */
-const MVO_BANKS = new Set([1021,1022,1023,1031,1032,1033,1041,1042,1043,1051,1052]);
 
 const LiveStage = {
   diff:"NORMAL",
@@ -160,7 +156,7 @@ const LiveStage = {
     if(this.menuAudio && !this.menuAudio.paused) return;
     if(!State.bgmOn) return;
     Audio_.stopBgm(true);
-    const a = new Audio(AUD.ost("bgm_soundtest_rhythm_menu_0001_loopoff"));
+    const a = new Audio(AUD.se("bgm_soundtest_rhythm_menu_0001_loopoff"));
     a.loop = true; a.volume = .3;
     a.play().catch(()=>{});
     this.menuAudio = a;
@@ -265,7 +261,7 @@ const LiveGame = {
       counts:{PERFECT:0, GREAT:0, GOOD:0, MISS:0},
       weight:0, totalWeight:taps.length + holds.length * 1.5,
       score:0, sp:0, feverUntil:0, pulses:[], texts:[],
-      held:new Array(LANES).fill(false), done:false, voiced:{},
+      held:new Array(LANES).fill(false), done:false,
     };
     const baseScore = 600000 + appeal * 8;
     const OFFSET = .045;
@@ -302,7 +298,6 @@ const LiveGame = {
       addScore(j.w);
       judgeText(j);
       G.pulses.push({t:performance.now(), lane});
-      sectionVoice();
     };
 
     /* sustained hold SE: starts on head hit, follows the key, stops on release */
@@ -394,22 +389,6 @@ const LiveGame = {
       }
     };
 
-    /* character reaction voices at 30% / 70% of the song */
-    const banks = unit.map(c => c.c).filter(cid => MVO_BANKS.has(cid));
-    const sectionVoice = () => {
-      const p = now() / dur;
-      for(const [key, at] of [["s1", .3], ["s2", .7]]){
-        if(p > at && !G.voiced[key]){
-          G.voiced[key] = 1;
-          if(banks.length){
-            const cid = banks[Math.random() * banks.length | 0];
-            const kind = Math.random() < .5 ? "sectionpositive" : "skillpositive";
-            Audio_.voice(`m${cid}_${kind}_000${1 + (Math.random() * 3 | 0)}`, .95);
-          }
-        }
-      }
-    };
-
     /* special appeal (fever) */
     const fireSp = () => {
       if(G.sp < 1) return;
@@ -424,9 +403,6 @@ const LiveGame = {
         h("span","SPECIAL APPEAL!"));
       ov.append(cut);
       setTimeout(() => cut.remove(), 2200);
-      const sv = (c.vo || []).find(v => v.includes("_spappeal_"));
-      if(sv) Audio_.voice(sv, .95);
-      else if(MVO_BANKS.has(c.c)) Audio_.voice(`m${c.c}_spduet_000${1 + (Math.random() * 3 | 0)}`, .95);
     };
     spBtn.onclick = fireSp;
 
@@ -676,14 +652,9 @@ const LiveGame = {
       State.save(); App.updateWallet();
 
       Audio_.se("se_rhythm_result_0001", .5);
-      const resBgm = new Audio(AUD.ost("bgm_soundtest_rhythm_result_0001_loopoff"));
+      const resBgm = new Audio(AUD.se("bgm_soundtest_rhythm_result_0001_loopoff"));
       resBgm.loop = true; resBgm.volume = .28;
       if(State.bgmOn) resBgm.play().catch(()=>{});
-      if(banks.length){
-        const cid = banks[Math.random() * banks.length | 0];
-        const cl = rank === "S" ? 3 : rank === "A" ? 2 : 1;
-        setTimeout(() => Audio_.voice(`m${cid}_clear${cl}_0001`, .95), 700);
-      }
 
       const res = h("div",{class:"lg-result"},
         h("div",{class:"lg-res-rank r" + rank}, rank),

@@ -525,18 +525,6 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   border-color:rgba(255,158,198,.55);color:#fff}
 .juke-full{font-size:9px;font-weight:800;letter-spacing:.1em;color:#0e0f1c;
   background:linear-gradient(135deg,#ffd066,#ff9ec6);border-radius:5px;padding:2px 6px;flex:none}
-.ost-note{font-size:12px;color:var(--ink2);margin-bottom:12px}
-.ost-list{max-width:760px}
-.ost-cat{font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--sky);
-  margin:18px 0 6px;padding-bottom:4px;border-bottom:1px solid rgba(127,212,240,.2)}
-.ost-row{display:flex;align-items:center;gap:12px;padding:9px 12px;border-radius:10px;
-  cursor:pointer;transition:.15s;border:1px solid transparent}
-.ost-row:hover{background:rgba(255,255,255,.05)}
-.ost-row.playing{background:rgba(255,158,198,.1);border-color:rgba(255,158,198,.35)}
-.ost-no{font-family:Jost,sans-serif;font-size:12px;font-weight:600;color:var(--ink2);width:22px;flex:none}
-.ost-t{font-size:14px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ost-row .juke-eq{opacity:0}
-.ost-row.playing .juke-eq{opacity:1}
 
 /* ═══════════ live stage — song select ═══════════ */
 .ls-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:14px 0}

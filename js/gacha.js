@@ -374,7 +374,6 @@ const Ceremony = {
       /* card voice right as the face turns over (UR/BR/LR/DR) */
       const gv = (c.vo||[]).find(v => v.includes("_gacha_"));
       if(gv) Audio_.voice(gv);
-      else if(c.mvo) Audio_.voice(`m${c.mvo}_spduet_000${1 + (Math.random()*3|0)}`);
     }
     await this.wait(580);                     /* let the .55s flip settle */
     if(tier >= 3) attachHolo(frIn, tier, 8);

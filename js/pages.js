@@ -29,9 +29,9 @@ const Home = {
       h("div",{class:"hero-veil"}),
       h("div",{class:"hero-inner"},
         h("div",{class:"hero-kicker"},"HASUNOSORA GIRLS' HIGH SCHOOL IDOL CLUB"),
-        h("div",{class:"hero-title", html:"蓮ノ空 <em>カードアトリエ</em>"}),
+        h("div",{class:"hero-title", html:"蓮ノ空 <em>カードガチャ</em>"}),
         h("div",{class:"hero-sub"},
-          `全${DB.cards.length}種のカードアート、${DB.banners.length}のガチャ、フルサイズ${DB.musics.filter(m=>m.full).length}曲＋OST${DB.ost.length}曲、ボイス${this.voiceCount()}種。ガチャを回し、ライブで遊び、コレクションを完成させよう。`),
+          `全${DB.cards.length}種のカードアート、${DB.banners.length}のガチャ、フルサイズ${DB.musics.filter(m=>m.full).length}曲、ボイス${this.voiceCount()}種。ガチャを回し、ライブで遊び、コレクションを完成させよう。`),
         h("div",{class:"hero-cta"},
           h("button",{class:"cta primary", onclick:() => App.go("gacha")},"✦ ガチャを引く"),
           h("button",{class:"cta ghost", onclick:() => App.go("live")},"♬ ライブで遊ぶ"),
@@ -84,7 +84,7 @@ const Home = {
       h("span",{class:"tile-ico"},ico), h("b",{},String(v)), h("span",{},lab));
   },
   voiceCount(){
-    return DB.cards.reduce((n,c) => n + (c.vo ? c.vo.length : 0), 0);
+    return DB.cards.reduce((n,c) => n + (c.vo ? c.vo.filter(v => v.includes("_gacha_")).length : 0), 0);
   },
 };
 
@@ -310,32 +310,24 @@ const Members = {
   },
 };
 
-/* ───── jukebox (songs full/preview + OST sound test) ───── */
+/* ───── jukebox (songs full/preview) ───── */
 const Jukebox = {
-  cur:null, audio:null, tab:"songs", useFull:true,
+  cur:null, audio:null, useFull:true,
 
   render(root){
     root.append(h("div",{class:"section-title"},"ジュークボックス",
-      h("small","JUKEBOX — 楽曲 & サウンドトラック")));
+      h("small","JUKEBOX — 楽曲")));
 
     const body = h("div");
     const tabs = h("div",{class:"juke-tabs"});
-    const drawTabs = () => {
-      tabs.replaceChildren(...[
-        h("button",{class:"juke-tab" + (this.tab === "songs" ? " on" : ""),
-          onclick:() => { this.tab = "songs"; drawTabs(); drawBody(); }},
-          `♪ 楽曲（${DB.musics.length}）`),
-        h("button",{class:"juke-tab" + (this.tab === "ost" ? " on" : ""),
-          onclick:() => { this.tab = "ost"; drawTabs(); drawBody(); }},
-          `♬ サウンドトラック（${DB.ost.length}）`),
-        this.tab === "songs" ? h("button",{class:"chip" + (this.useFull ? " on" : ""),
-          style:"margin-left:auto",
-          onclick:e => { this.useFull = !this.useFull; e.target.classList.toggle("on", this.useFull); }},
-          this.useFull ? "フルサイズ再生" : "試聴版再生") : null,
-      ].filter(Boolean));
-    };
-    const drawBody = () => this.tab === "songs" ? this.renderSongs(body) : this.renderOst(body);
-    drawTabs(); drawBody();
+    tabs.append(
+      h("button",{class:"juke-tab on"}, `♪ 楽曲（${DB.musics.length}）`),
+      h("button",{class:"chip" + (this.useFull ? " on" : ""),
+        style:"margin-left:auto",
+        onclick:e => { this.useFull = !this.useFull; e.target.classList.toggle("on", this.useFull); }},
+        this.useFull ? "フルサイズ再生" : "試聴版再生"),
+    );
+    this.renderSongs(body);
     root.append(tabs, body);
   },
 
@@ -359,41 +351,16 @@ const Jukebox = {
     body.replaceChildren(grid);
   },
 
-  renderOst(body){
-    const list = h("div",{class:"ost-list"});
-    let lastCat = null;
-    DB.ost.forEach((o, i) => {
-      const cat = o.cat || "その他";
-      if(cat !== lastCat){
-        lastCat = cat;
-        list.append(h("div",{class:"ost-cat"}, cat.replace("/", " / ")));
-      }
-      const el = h("div",{class:"ost-row" + (this.cur === o ? " playing" : ""),
-        onclick:() => this.play(o, el)},
-        h("span",{class:"ost-no"}, String(o.id).padStart(2, "0")),
-        h("span",{class:"ost-t"}, o.t),
-        h("div",{class:"juke-eq"}, h("i"), h("i"), h("i")),
-      );
-      list.append(el);
-    });
-    body.replaceChildren(
-      h("div",{class:"ost-note"},"ゲーム内サウンドテスト（offlinebgms）収録の公式インストゥルメンタル全曲。"),
-      list);
-  },
-
-  /* m: music entry (snd) or ost entry (f) */
   play(m, el){
     const dock = document.getElementById("dock");
     if(this.cur === m){ this.stop(); return; }
-    document.querySelectorAll(".juke-card.playing,.ost-row.playing")
+    document.querySelectorAll(".juke-card.playing")
       .forEach(x => x.classList.remove("playing"));
     if(this.audio) this.audio.pause();
     Audio_.stopBgm(true);
     this.cur = m;
     el && el.classList.add("playing");
-    const isOst = !!m.f;
-    const src = isOst ? AUD.ost(m.f)
-              : (this.useFull && m.full ? AUD.live(m.snd) : AUD.bgm(m.snd));
+    const src = this.useFull && m.full ? AUD.live(m.snd) : AUD.bgm(m.snd);
     const a = new Audio(src);
     a.volume = .55;
     a.play().catch(()=>{});
@@ -401,10 +368,10 @@ const Jukebox = {
 
     dock.classList.remove("hidden");
     const jk = document.getElementById("dock-jacket");
-    if(!isOst && m.j){ jk.style.display = ""; jk.src = IMG.jacket(m.j); }
+    if(m.j){ jk.style.display = ""; jk.src = IMG.jacket(m.j); }
     else { jk.style.display = "none"; }
     document.getElementById("dock-title").textContent =
-      m.t + (isOst ? "" : (this.useFull && m.full ? "（フル）" : "（試聴）"));
+      m.t + (this.useFull && m.full ? "（フル）" : "（試聴）");
     const playBtn = document.getElementById("dock-play");
     playBtn.textContent = "⏸";
     playBtn.onclick = () => {
@@ -417,20 +384,18 @@ const Jukebox = {
         (a.duration ? a.currentTime/a.duration*100 : 0) + "%";
     };
     a.onended = () => {
-      /* autoplay next track in the current list */
-      const list = isOst ? DB.ost : DB.musics;
-      const next = list[(list.indexOf(m) + 1) % list.length];
+      /* autoplay next track */
+      const next = DB.musics[(DB.musics.indexOf(m) + 1) % DB.musics.length];
       this.cur = null;
-      const sel = isOst ? ".ost-row" : ".juke-card";
-      const els = document.querySelectorAll(sel);
-      this.play(next, els[list.indexOf(next)]);
+      const els = document.querySelectorAll(".juke-card");
+      this.play(next, els[DB.musics.indexOf(next)]);
     };
   },
 
   stop(){
     if(this.audio) this.audio.pause();
     this.audio = null; this.cur = null;
-    document.querySelectorAll(".juke-card.playing,.ost-row.playing")
+    document.querySelectorAll(".juke-card.playing")
       .forEach(x => x.classList.remove("playing"));
     document.getElementById("dock").classList.add("hidden");
   },
