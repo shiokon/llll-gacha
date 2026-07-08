@@ -30,8 +30,6 @@ const Home = {
       h("div",{class:"hero-inner"},
         h("div",{class:"hero-kicker"},"HASUNOSORA GIRLS' HIGH SCHOOL IDOL CLUB"),
         h("div",{class:"hero-title", html:"蓮ノ空 <em>カードガチャ</em>"}),
-        h("div",{class:"hero-sub"},
-          t("home.sub", DB.cards.length, DB.banners.length, DB.musics.filter(m=>m.full).length, this.voiceCount())),
         h("div",{class:"hero-cta"},
           h("button",{class:"cta primary", onclick:() => App.go("gacha")},t("home.ctaGacha")),
           h("button",{class:"cta ghost", onclick:() => App.go("live")},t("home.ctaLive")),
@@ -83,9 +81,6 @@ const Home = {
   tile(v, lab, ico){
     return h("div",{class:"stat-tile"},
       h("span",{class:"tile-ico"},ico), h("b",{},String(v)), h("span",{},lab));
-  },
-  voiceCount(){
-    return DB.cards.reduce((n,c) => n + (c.vo ? c.vo.filter(v => v.includes("_gacha_")).length : 0), 0);
   },
 };
 
