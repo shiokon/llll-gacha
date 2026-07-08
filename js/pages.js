@@ -98,9 +98,11 @@ const Collection = {
       const all = DB.cards.filter(c => c.c === id);
       const own = all.filter(c => State.owned[c.s]).length;
       const pct = all.length ? own/all.length*100 : 0;
+      const chibiCards = all.filter(c => c.chibi);
+      const chibi = chibiCards.length ? chibiCards[Math.random() * chibiCards.length | 0].s : 0;
       return h("div",{class:"coll-char", style:`--cc:${ch.col}`,
         onclick:() => { Gallery.f.chars = new Set([id]); App.go("gallery"); }},
-        ch.chibi ? h("img",{src:IMG.chibi(ch.chibi), loading:"lazy"}) : null,
+        chibi ? h("img",{src:IMG.chibi(chibi), loading:"lazy"}) : null,
         h("div",{style:"flex:1"},
           h("div",{class:"cc-name"}, ch.n),
           h("div",{class:"cc-nums"}, `${own} / ${all.length}　(${pct.toFixed(0)}%)`),
@@ -285,9 +287,13 @@ const Members = {
       const id = +ids;
       const cards = DB.cards.filter(c => c.c === id);
       const units = ch.units.map(u => DB.units[u]).filter(Boolean);
+      /* pick a fresh random chibi (any of this character's cards that has one) each render,
+         instead of always showing the same fixed art */
+      const chibiCards = cards.filter(c => c.chibi);
+      const chibi = chibiCards.length ? chibiCards[Math.random() * chibiCards.length | 0].s : 0;
       return h("div",{class:"mem-card", style:`--mc:${ch.col}`},
         h("div",{class:"mem-top"},
-          ch.chibi ? h("img",{src:IMG.chibi(ch.chibi), loading:"lazy"}) : null,
+          chibi ? h("img",{src:IMG.chibi(chibi), loading:"lazy"}) : null,
           h("div",{},
             h("div",{class:"mem-name"}, ch.n),
             h("div",{class:"mem-en"}, ch.en),
@@ -298,8 +304,14 @@ const Members = {
             ),
           ),
         ),
-        ch.intro ? h("div",{class:"mem-intro"}, ch.intro) : null,
-        h("div",{class:"mem-cards-link", onclick:() => {
+        ch.intro ? h("div",{class:"mem-intro"}, ch.intro.split("\n").map(line => {
+          /* lines wrapped in the source data lead with ideographic spaces to hang-indent
+             under the value column — do that for real with CSS instead, so it still lines
+             up correctly once the browser's own word-wrap gets involved */
+          const cont = line.startsWith("　");
+          return h("div",{class:"mem-intro-row" + (cont ? " cont" : "")}, cont ? line.replace(/^　+/, "") : line);
+        })) : null,
+        h("div",{class:"mem-cards-link", style:`color:${legibleColor(ch.col)}`, onclick:() => {
           Gallery.f.chars = new Set([id]); App.go("gallery");
         }}, t("mem.viewCards", cards.filter(c=>State.owned[c.s]).length, cards.length)),
       );

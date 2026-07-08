@@ -314,6 +314,18 @@ function toast(msg){
 function charOf(c){ return DB.chars[c.c] || {n:"？？？", col:"#888", en:"", units:[]}; }
 function rarOf(c){ return RAR[c.r] || {n:"?", c:"#999", coin:10, tier:0}; }
 
+/* some char colors (e.g. navy/charcoal duo accents) are too dark to read as text
+   on the dark UI background — lighten only those, leave already-legible colors untouched */
+function legibleColor(hex, target = 90){
+  const n = parseInt(hex.slice(1), 16);
+  const r = (n >> 16) & 255, g = (n >> 8) & 255, b = n & 255;
+  const brightness = 0.299*r + 0.587*g + 0.114*b;
+  if(brightness >= target) return hex;
+  const t = (target - brightness) / (255 - brightness);
+  const mix = c => Math.round(c + (255 - c) * t);
+  return `rgb(${mix(r)},${mix(g)},${mix(b)})`;
+}
+
 /* pointer-tracked 3D tilt + holo foil. tier>=3 gets rainbow foil. */
 function attachHolo(wrap, tier, maxTilt = 10){
   wrap.classList.add("holo");

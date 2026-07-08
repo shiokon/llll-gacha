@@ -286,10 +286,16 @@ const LiveGame = {
       notes, holds, idx:0, combo:0, maxCombo:0, judged:0,
       counts:{PERFECT:0, GREAT:0, GOOD:0, MISS:0},
       weight:0, totalWeight:taps.length + holds.length * 1.5,
-      score:0, sp:0, feverUntil:0, pulses:[], texts:[],
+      base:0, score:0, sp:0, feverUntil:0, pulses:[], texts:[],
       held:new Array(LANES).fill(false), done:false,
     };
-    const baseScore = 600000 + appeal * 8;
+    /* scoring: an all-PERFECT run earns exactly 1,000,000 base points,
+       then multipliers — chart difficulty (note density; the data ships no
+       level values) and unit appeal — scale it. Combo never affects score. */
+    const chartSpan = Math.max(1, chartEnd - (notes.length ? notes[0].t : 0));
+    const diffMul = 1 + notes.length / chartSpan * .18;   /* NORMAL ≈×1.2 … MASTER ≈×2.3 */
+    const appealMul = 1 + appeal / 64000;                 /* best possible unit ≈×2.0 */
+    const missMul = () => 1 / (1 + .08 * Math.log(1 + G.counts.MISS));
     const OFFSET = .045;
     const APPR = LiveStage.approach();
     let clockBase = 0, useAudioClock = true;
@@ -300,16 +306,19 @@ const LiveGame = {
     const NCOL = {tap:"#ff9ec6", hold:"#7fd4f0", flick:"#8ee5c0", trace:"#ffd066"};
     const JUDGE = [
       {n:"PERFECT", w:1,   win:.055, col:"#ffd97a", se:"se_rhythm_tap_perfect_0001"},
-      {n:"GREAT",   w:.65, win:.105, col:"#8fd8ff", se:"se_rhythm_tap_great_0001"},
-      {n:"GOOD",    w:.35, win:.155, col:"#b9c2d8", se:"se_rhythm_tap_good_0001"},
+      {n:"GREAT",   w:.97, win:.105, col:"#8fd8ff", se:"se_rhythm_tap_great_0001"},
+      {n:"GOOD",    w:.90, win:.155, col:"#b9c2d8", se:"se_rhythm_tap_good_0001"},
     ];
     const overlaps = (n, z0, z1) => n.r >= z0 - .5 && n.l <= z1 + .5;
 
-    const addScore = w => {
-      const comboBonus = 1 + Math.min(G.combo, 400) * .0004;
-      const fever = now() < G.feverUntil ? 1.5 : 1;
-      G.score += baseScore * (w / G.totalWeight) * comboBonus * fever;
+    const updateScore = () => {
+      G.score = G.base * missMul() * diffMul * appealMul;
       scoreEl.textContent = Math.round(G.score).toLocaleString();
+    };
+    const addScore = w => {
+      const fever = now() < G.feverUntil ? 1.5 : 1;
+      G.base += 1000000 * (w / G.totalWeight) * fever;
+      updateScore();
     };
     const judgeText = j => G.texts.push({t:performance.now(), n:j.n, col:j.col});
 
@@ -379,11 +388,13 @@ const LiveGame = {
           } else if(tNow - n.t > .12){
             n.hit = "MISS";
             G.counts.MISS++; G.judged++; G.combo = 0;
+            updateScore();
             judgeText({n:"MISS", col:"#ff7d95"});
           }
         } else if(tNow - n.t > .16){
           n.hit = "MISS";
           G.counts.MISS++; G.judged++; G.combo = 0;
+          updateScore();
           judgeText({n:"MISS", col:"#ff7d95"});
           if(n.k === 1) stopHoldSnd(n);
         }
@@ -669,7 +680,7 @@ const LiveGame = {
       cleanup();
       const acc = G.totalWeight ? G.weight / G.totalWeight : 0;
       const fc = G.counts.MISS === 0 && G.holds.every(n => n.tailHit >= 0);
-      const rank = acc >= .95 ? "S" : acc >= .87 ? "A" : acc >= .72 ? "B" : "C";
+      const rank = acc >= .98 ? "S" : acc >= .93 ? "A" : acc >= .82 ? "B" : "C";
       const key = m.snd + "_" + diffKey;
       const first = !State.live[key];
       const prev = State.live[key];

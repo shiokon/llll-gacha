@@ -404,14 +404,16 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 .mem-card:hover{transform:translateY(-4px);border-color:var(--mc);box-shadow:0 18px 44px -16px rgba(0,0,0,.6)}
 .mem-card::before{content:"";position:absolute;inset:0 0 auto 0;height:90px;background:linear-gradient(160deg,var(--mc),transparent 80%);opacity:.28}
 .mem-top{position:relative;display:flex;gap:14px;align-items:center}
-.mem-top img{height:96px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4))}
+.mem-top img{height:96px;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4));flex:none}
+.mem-top>div{min-width:0}
 .mem-name{font-size:18px;font-weight:900}
 .mem-en{font-family:Jost;font-size:10.5px;letter-spacing:.26em;color:var(--ink-dim);text-transform:uppercase}
 .mem-cv{font-size:11.5px;color:var(--ink-dim);margin-top:5px}
 .mem-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .mem-tag{font-size:10px;padding:2px 9px;border-radius:99px;border:1px solid var(--line);color:var(--ink-dim)}
-.mem-intro{position:relative;font-size:11.8px;line-height:1.75;color:var(--ink-dim);margin-top:14px;white-space:pre-wrap;
-  max-height:130px;overflow:hidden;-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+.mem-intro{position:relative;font-size:11.8px;line-height:1.75;color:var(--ink-dim);margin-top:14px}
+.mem-intro-row{white-space:pre-wrap;padding-left:8em;text-indent:-8em}
+.mem-intro-row.cont{text-indent:0}
 .mem-cards-link{position:relative;margin-top:10px;font-size:12px;font-weight:700;color:var(--mc);cursor:pointer}
 
 /* ═══════════ JUKEBOX ═══════════ */
