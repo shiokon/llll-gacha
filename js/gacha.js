@@ -92,8 +92,10 @@ const Gacha = {
    *   DR 0.1% (any banner) / LR 1% (only if the banner picks up an LR)
    *   UR 3% / BR 3% (only if picked up) / SR 10% / R = remainder.
    *   m-rarities share the base rarity's odds (mUR≡UR, mSR≡SR, mR≡R).
-   *   Pickups collectively take HALF their tier's rate — 50/50 to "lose"
-   *   to another card of the same rarity.
+   *   UR/SR pickups collectively take HALF their tier's rate — 50/50 to
+   *   "lose" to another card of the same rarity.
+   *   LR/BR tiers hold ONLY the rate-ups (no 50/50): the tier rate is
+   *   split evenly among them. BR banners have no UR tier at all.
    */
   TIERS:[
     {key:"DR", rate:.001, rars:[8],     always:true },
@@ -105,11 +107,15 @@ const Gacha = {
 
   buildPool(b){
     const pickCards = b.picks.map(s => CARD_BY_S[s]).filter(Boolean);
+    const hasBR = pickCards.some(c => c.r === 9);
     const pool = {tiers:[], r:{pick:[], std:[]}};
     for(const t of this.TIERS){
       const pick = pickCards.filter(c => t.rars.includes(c.r));
       if(!t.always && !pick.length) continue;      /* LR/BR only when picked up */
-      const std = t.key === "UR" || t.key === "SR"
+      if(t.key === "UR" && hasBR) continue;        /* BR banners drop the UR tier */
+      const std = t.key === "LR" || t.key === "BR"
+        ? []                                       /* rate-ups only, no 50/50 */
+        : t.key === "UR" || t.key === "SR"
         ? DB.cards.filter(c => t.rars.includes(c.r) && c.lt === 0 && !b.picks.includes(c.s))
         : DB.cards.filter(c => t.rars.includes(c.r) && !b.picks.includes(c.s));
       if(!pick.length && !std.length) continue;
@@ -124,7 +130,7 @@ const Gacha = {
     const parts = pool.tiers.map(t => `${t.key} ${(t.rate*100).toFixed(t.rate<.01?1:0)}%`);
     const rRate = 1 - pool.tiers.reduce((s,t) => s + t.rate, 0);
     parts.push(`R ${(rRate*100).toFixed(1)}%`);
-    return `提供割合（本サイト独自）: ${parts.join(" ／ ")}　※10連の10枚目はSR以上確定・ピックアップは各レアリティ枠の半分を占有・ダブりはペタルコインに変換`;
+    return `提供割合（本サイト独自）: ${parts.join(" ／ ")}　※10連の10枚目はSR以上確定・UR/SRのピックアップは各枠の半分を占有・LR/BRはピックアップのみ排出（枠内で均等割り）・ダブりはペタルコインに変換`;
   },
 
   drawFromTier(t){

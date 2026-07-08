@@ -108,9 +108,35 @@ const LiveStage = {
     };
     drawDiffs(); drawGrid();
 
+    /* lifetime stats: every best score across all songs and difficulties */
+    const played = Object.entries(State.live).map(([k, v]) => {
+      const us = k.lastIndexOf("_");
+      const m = DB.musics.find(x => x.snd === +k.slice(0, us));
+      return m ? {m, df: k.slice(us + 1), ...v} : null;
+    }).filter(Boolean);
+    let statsEl = null;
+    if(played.length){
+      const total = played.reduce((s, p) => s + p.sc, 0);
+      const top = [...played].sort((a, b) => b.sc - a.sc).slice(0, 3);
+      statsEl = h("div",{class:"ls-stats"},
+        h("div",{class:"ls-stat-total"},
+          h("span","トータルスコア"),
+          h("b", total.toLocaleString()),
+          h("small",`${played.length} 譜面クリア`)),
+        h("div",{class:"ls-stat-top"},
+          top.map((p, i) => h("div",{class:"ls-top-row"},
+            h("span",{class:"ls-top-no"}, ["1st","2nd","3rd"][i]),
+            h("span",{class:"ls-top-t"}, p.m.t),
+            h("span",{class:"ls-top-d", style:`color:${(this.DIFFS[p.df]||{}).col||"#9aa3c7"}`}, p.df),
+            h("span",{class:"ls-top-s"}, p.sc.toLocaleString()),
+          ))),
+      );
+    }
+
     root.append(
       h("div",{class:"section-title"},"スクールアイドルショウ",
         h("small",`SCHOOL IDOL SHOW — 実譜面 ${songs.length}曲`)),
+      statsEl,
       h("div",{class:"ls-head"},
         unitRow, speedCtl,
         h("div",{class:"ls-help"},"S・D・F・J・K・L キー、またはレーンをタップ。緑フリックはタップでOK、黄トレースはキーを押しっぱなしで拾えます。"),
@@ -304,7 +330,7 @@ const LiveGame = {
     const holdSnd = hd => {
       if(!State.seOn || hd.au) return;
       const a = new Audio(AUD.se("se_rhythm_hold_0001"));
-      a.loop = true; a.volume = .22;
+      a.loop = true; a.volume = .4;
       a.play().catch(()=>{});
       hd.au = a;
     };
@@ -328,7 +354,7 @@ const LiveGame = {
       }
       const j = JUDGE.find(j => bestDt <= j.win);
       registerHit(best, j, lane);
-      Audio_.se(best.k === 2 ? "se_rhythm_flick_0001" : j.se, .4);
+      Audio_.se(best.k === 2 ? "se_rhythm_flick_0001" : j.se, .85);
       if(best.k === 1) holdSnd(best);
     };
 
@@ -349,7 +375,7 @@ const LiveGame = {
           /* trace note: no tap needed — hits while a key over it is held */
           if(tNow >= n.t - .033 && heldSpanOverlap(n.l, n.r)){
             registerHit(n, JUDGE[0], laneOfSpan(n.l, n.r));
-            Audio_.se("se_rhythm_trace_0001", .32);
+            Audio_.se("se_rhythm_trace_0001", .6);
           } else if(tNow - n.t > .12){
             n.hit = "MISS";
             G.counts.MISS++; G.judged++; G.combo = 0;
@@ -447,8 +473,8 @@ const LiveGame = {
       cv.width = W * dpr; cv.height = H * dpr;
       cv.style.width = W + "px"; cv.style.height = H + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      hitY = H * .78;
-      trackW = Math.min(W * .72, 780);
+      hitY = H * .86;
+      trackW = W < 640 ? W * .96 : Math.min(W * .72, 780);
       trackX = (W - trackW) / 2;
       zones.style.left = trackX + "px";
       zones.style.width = trackW + "px";
