@@ -79,7 +79,7 @@ const I18N = {
     "nav.home":"Home","nav.gacha":"Gacha","nav.gallery":"Gallery","nav.collection":"Collection",
     "nav.members":"Members","nav.live":"Live","nav.jukebox":"Jukebox",
     "title.wallet":"Petal Coins (dupes convert)","title.se":"Sound effects","title.reset":"Reset data","title.lang":"言語：日本語に切替",
-    "home.sub":(c,b,s,v)=>`${c} card arts, ${b} gacha banners, ${s} full songs and ${v} voice lines. Pull the gacha, play lives, complete your collection.`,
+    "home.sub":(c,b,s,v)=>`${c} cards, ${b} gacha banners, ${s} full songs and ${v} voice lines. Pull the gacha, play lives, complete your collection.`,
     "home.ctaGacha":"✦ Pull Gacha","home.ctaLive":"♬ Play Live","home.ctaGallery":"❏ Gallery","home.ctaTheater":"▶ Theater Mode",
     "home.banners":"Pickup Gacha","home.latest":"Latest Cards",
     "coll.luck":"Gacha Fortune","coll.title":"Collection","coll.others":"Others","coll.recent":"Recent Pulls",
