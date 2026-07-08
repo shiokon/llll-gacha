@@ -276,7 +276,7 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 @keyframes sheen{0%,55%{transform:translateX(-120%)}85%,100%{transform:translateX(120%)}}
 .gs-meta{display:flex;gap:22px;margin-top:16px;font-size:12px;color:var(--ink-dim);flex-wrap:wrap;justify-content:center}
 .gs-meta b{color:var(--ink);font-family:Jost}
-.gs-rates{margin-top:8px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em}
+.gs-rates{margin-top:8px;font-size:10.5px;color:var(--ink-faint);letter-spacing:.06em;white-space:pre-line}
 
 /* ═══════════ ceremony overlay ═══════════ */
 #ceremony{position:fixed;inset:0;z-index:200;background:#07091a;overflow:hidden}
