@@ -3,7 +3,16 @@
 
 const Gallery = {
   f: { chars:new Set(), rars:new Set(), styles:new Set(), moods:new Set(),
-       units:new Set(), owned:"all", q:"", sort:"order", dim:false },
+       units:new Set(), owned:"all", q:"", sort:"order", dim:true, idol:false },
+
+  /* gallery thumb: normal art, or the idolized variant when toggled */
+  thumbOf(c){
+    if(this.f.idol){
+      const idol = (c.arts || []).find(a => a % 10 !== 0);
+      if(idol) return idol;
+    }
+    return c.th;
+  },
 
   charIdsInOrder(){
     const ids = Object.keys(DB.chars).map(Number);
@@ -69,6 +78,8 @@ const Gallery = {
     }
     mkChip(gOwn, t("gal.dim"), () => this.f.dim,
       () => { this.f.dim = !this.f.dim; }, null, t("gal.dimTitle"));
+    mkChip(gOwn, t("gal.idol"), () => this.f.idol,
+      () => { this.f.idol = !this.f.idol; }, null, t("gal.idolTitle"));
     gOwn.append(h("button",{class:"chip", style:"--chip-c:#ffd97a",
       title:t("gal.theaterTitle"),
       onclick:() => Theater.start(this.filtered())},
@@ -146,7 +157,7 @@ const Gallery = {
       style:`--rc:${r.c}`,
       onclick:() => Detail.open(c, opts.list),
     },
-      h("img", {src:IMG.thumb(c.th), loading:"lazy", alt:c.n}),
+      h("img", {src:IMG.thumb(Gallery.thumbOf(c)), loading:"lazy", alt:c.n}),
       h("span", {class:"rar"}, r.n),
       owned && State.owned[c.s] > 1 ? h("span",{class:"own"},`×${State.owned[c.s]}`) : null,
       State.newFlags[c.s] ? h("span",{class:"newtag"},"NEW") : null,

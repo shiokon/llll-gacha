@@ -376,11 +376,9 @@ const Ceremony = {
 
     Audio_.se(tier >= 3 ? "se_gacha_urturn_0001" : "se_gacha_turn_0001");
     card.classList.add("flipped");
-    if(tier >= 3){
-      /* card voice right as the face turns over (UR/BR/LR/DR) */
-      const gv = (c.vo||[]).find(v => v.includes("_gacha_"));
-      if(gv) Audio_.voice(gv);
-    }
+    /* card voice right as the face turns over — every rarity */
+    const gv = (c.vo||[]).find(v => v.includes("_gacha_"));
+    if(gv) Audio_.voice(gv);
     await this.wait(580);                     /* let the .55s flip settle */
     if(tier >= 3) attachHolo(frIn, tier, 8);
     card.classList.add(tier >= 4 ? "glow-hi" : tier === 3 ? "glow-UR" : tier === 2 ? "glow-SR" : "x");
