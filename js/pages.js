@@ -31,12 +31,12 @@ const Home = {
         h("div",{class:"hero-kicker"},"HASUNOSORA GIRLS' HIGH SCHOOL IDOL CLUB"),
         h("div",{class:"hero-title", html:"蓮ノ空 <em>カードガチャ</em>"}),
         h("div",{class:"hero-sub"},
-          `全${DB.cards.length}種のカードアート、${DB.banners.length}のガチャ、フルサイズ${DB.musics.filter(m=>m.full).length}曲、ボイス${this.voiceCount()}種。ガチャを回し、ライブで遊び、コレクションを完成させよう。`),
+          t("home.sub", DB.cards.length, DB.banners.length, DB.musics.filter(m=>m.full).length, this.voiceCount())),
         h("div",{class:"hero-cta"},
-          h("button",{class:"cta primary", onclick:() => App.go("gacha")},"✦ ガチャを引く"),
-          h("button",{class:"cta ghost", onclick:() => App.go("live")},"♬ ライブで遊ぶ"),
-          h("button",{class:"cta ghost", onclick:() => App.go("gallery")},"❏ ギャラリーへ"),
-          h("button",{class:"cta ghost", onclick:() => Theater.start()},"▶ シアターモード"),
+          h("button",{class:"cta primary", onclick:() => App.go("gacha")},t("home.ctaGacha")),
+          h("button",{class:"cta ghost", onclick:() => App.go("live")},t("home.ctaLive")),
+          h("button",{class:"cta ghost", onclick:() => App.go("gallery")},t("home.ctaGallery")),
+          h("button",{class:"cta ghost", onclick:() => Theater.start()},t("home.ctaTheater")),
         ),
       ),
       nameTag,
@@ -46,14 +46,15 @@ const Home = {
       this.tile(owned + " / " + DB.cards.length, "COLLECTION", "♡"),
       this.tile(State.pulls, "TOTAL PULLS", "✦"),
       this.tile(State.coins, "PETAL COINS", "❀"),
-      this.tile(Object.keys(DB.chars).filter(k => DB.cards.some(c => c.c == k)).length, "MEMBERS", "☘"),
-      this.tile(DB.musics.length, "SONGS", "♪"),
+      this.tile(Object.entries(DB.chars).filter(([k, ch]) =>
+        !isSpecialChar(ch) && DB.cards.some(c => c.c == k)).length, "MEMBERS", "☘"),
+      this.tile(DB.musics.filter(m => m.chart).length, "SONGS", "♪"),
     );
 
     /* current banners + recent cards */
     const nowB = realBanners().filter(b => b.picks.length).slice(0, 5);
     const bcol = h("div",{class:"panel"},
-      h("div",{class:"section-title"},"ピックアップガチャ", h("small","BANNERS")),
+      h("div",{class:"section-title"},t("home.banners"), h("small","BANNERS")),
       nowB.map(b => h("div",{class:"mini-banner", onclick:() => { Gacha.banner = b; App.go("gacha"); }},
         h("img",{src:IMG.banner(b.id), loading:"lazy"}),
         h("div",{},
@@ -63,7 +64,7 @@ const Home = {
     );
     const latest = [...DB.cards].sort((a,b) => b.o - a.o).slice(0, 8);
     const lcol = h("div",{class:"panel"},
-      h("div",{class:"section-title"},"最新カード", h("small","LATEST")),
+      h("div",{class:"section-title"},t("home.latest"), h("small","LATEST")),
       h("div",{class:"card-grid", style:"grid-template-columns:repeat(auto-fill,minmax(118px,1fr))"},
         latest.map(c => Gallery.cardEl(c, {noDim:true}))),
     );
@@ -91,19 +92,18 @@ const Home = {
 /* ───── collection ───── */
 const Collection = {
   render(root){
-    root.append(h("div",{class:"section-title"},"ガチャ運勢", h("small","LUCK REPORT")));
+    root.append(h("div",{class:"section-title"},t("coll.luck"), h("small","LUCK REPORT")));
     root.append(this.luckPanel());
-    root.append(h("div",{class:"section-title"},"コレクション", h("small","COLLECTION")));
+    root.append(h("div",{class:"section-title"},t("coll.title"), h("small","COLLECTION")));
 
     const chars = Object.entries(DB.chars)
       .map(([id, ch]) => [+id, ch])
       .filter(([id]) => DB.cards.some(c => c.c === id));
-    const head = h("div",{class:"coll-head"});
-    for(const [id, ch] of chars){
+    const charRow = ([id, ch]) => {
       const all = DB.cards.filter(c => c.c === id);
       const own = all.filter(c => State.owned[c.s]).length;
       const pct = all.length ? own/all.length*100 : 0;
-      head.append(h("div",{class:"coll-char", style:`--cc:${ch.col}`,
+      return h("div",{class:"coll-char", style:`--cc:${ch.col}`,
         onclick:() => { Gallery.f.chars = new Set([id]); App.go("gallery"); }},
         ch.chibi ? h("img",{src:IMG.chibi(ch.chibi), loading:"lazy"}) : null,
         h("div",{style:"flex:1"},
@@ -111,13 +111,19 @@ const Collection = {
           h("div",{class:"cc-nums"}, `${own} / ${all.length}　(${pct.toFixed(0)}%)`),
           h("div",{class:"cc-bar"}, h("i",{style:`width:${pct}%`})),
         ),
-      ));
+      );
+    };
+    const main = chars.filter(([,ch]) => !isSpecialChar(ch));
+    const others = chars.filter(([,ch]) => isSpecialChar(ch));
+    root.append(h("div",{class:"coll-head"}, main.map(charRow)));
+    if(others.length){
+      root.append(h("div",{class:"section-title"},t("coll.others"), h("small","OTHERS")));
+      root.append(h("div",{class:"coll-head"}, others.map(charRow)));
     }
-    root.append(head);
 
     /* recent history */
     if(State.history.length){
-      root.append(h("div",{class:"section-title"},"最近の入手", h("small","RECENT")));
+      root.append(h("div",{class:"section-title"},t("coll.recent"), h("small","RECENT")));
       const grid = h("div",{class:"card-grid", style:"grid-template-columns:repeat(auto-fill,minmax(110px,1fr))"});
       [...State.history].reverse().slice(0, 24).forEach(sid => {
         const c = CARD_BY_S[sid];
@@ -128,11 +134,11 @@ const Collection = {
 
     root.append(h("div",{style:"margin-top:30px;text-align:center"},
       h("button",{class:"chip", onclick:() => {
-        if(confirm("コレクション・ガチャ履歴をすべてリセットしますか？")){
+        if(confirm(t("coll.resetConfirm"))){
           localStorage.removeItem(SAVE_KEY);
           location.reload();
         }
-      }},"⟲ データリセット")));
+      }},t("coll.reset"))));
   },
 
   luckPanel(){
@@ -152,12 +158,12 @@ const Collection = {
     let drought = 0;
     for(let i = hist.length-1; i >= 0 && rarOf(hist[i]).tier < 3; i--) drought++;
 
-    let kanji = "？", sub = "10回以上引くと運勢が出ます";
+    let kanji = "？", sub = t("luck.needPulls");
     if(n >= 10){
       const ratio = hiRate / .061;
       kanji = ratio >= 1.6 ? "大吉" : ratio >= 1.15 ? "吉" : ratio >= .8 ? "中吉" :
               ratio >= .5 ? "小吉" : ratio > 0 ? "凶" : "大凶";
-      sub = `UR帯 実績 ${(hiRate*100).toFixed(2)}%（${hi}枚 / ${n}回）`;
+      sub = t("luck.sub", (hiRate*100).toFixed(2), hi, n);
     }
     const maxC = Math.max(1, ...counts.map(c => c[1]));
     const rows = h("div",{class:"rate-rows"},
@@ -168,11 +174,11 @@ const Collection = {
         return h("div",{class:"rate-row"},
           h("span",{class:"rr-lab", style:`color:${col}`}, k),
           h("div",{class:"rr-bar"}, bar),
-          h("span",{class:"rr-val", html:`<b>${v}</b>枚 ${n?`(${(v/n*100).toFixed(1)}%)`:""}`}),
+          h("span",{class:"rr-val", html:t("luck.cnt", v, n?`(${(v/n*100).toFixed(1)}%)`:"")}),
         );
       }),
       h("div",{style:"font-size:11px;color:var(--ink-faint);margin-top:4px"},
-        n ? `UR帯なし連続 ${drought} 回 ／ 累計 ${State.pulls} 回 ／ ペタルコイン ${State.coins.toLocaleString()}` : "まだガチャを引いていません"),
+        n ? t("luck.foot", drought, State.pulls, State.coins.toLocaleString()) : t("luck.none")),
     );
     return h("div",{class:"luck-wrap"},
       h("div",{class:"luck-badge"},
@@ -190,7 +196,7 @@ const Theater = {
 
   start(list){
     let src = (list && list.length ? list : DB.cards).filter(c => c.arts.length);
-    if(!src.length){ toast("表示できるカードがありません"); return; }
+    if(!src.length){ toast(t("th.noCards")); return; }
     /* shuffle a copy for ambience */
     src = [...src];
     for(let i = src.length-1; i > 0; i--){
@@ -214,7 +220,7 @@ const Theater = {
       h("div",{class:"th-veil"}),
       this.bar, this.cap, this.songPill,
       h("button",{class:"icon-btn th-close", onclick:() => this.stop()},"✕"),
-      h("div",{class:"th-hint"},"CLICK / → 次へ　ESC 終了"),
+      h("div",{class:"th-hint"},t("th.hint")),
     );
     document.body.append(this.el);
     document.body.style.overflow = "hidden";
@@ -280,14 +286,11 @@ const Theater = {
 /* ───── members ───── */
 const Members = {
   render(root){
-    root.append(h("div",{class:"section-title"},"メンバー", h("small","MEMBERS")));
-    const grid = h("div",{class:"mem-grid"});
-    for(const [ids, ch] of Object.entries(DB.chars)){
+    const memCard = ([ids, ch]) => {
       const id = +ids;
       const cards = DB.cards.filter(c => c.c === id);
-      if(!cards.length && !ch.intro) continue;   /* keep card-less members (沙知) if they have a profile */
       const units = ch.units.map(u => DB.units[u]).filter(Boolean);
-      grid.append(h("div",{class:"mem-card", style:`--mc:${ch.col}`},
+      return h("div",{class:"mem-card", style:`--mc:${ch.col}`},
         h("div",{class:"mem-top"},
           ch.chibi ? h("img",{src:IMG.chibi(ch.chibi), loading:"lazy"}) : null,
           h("div",{},
@@ -295,7 +298,7 @@ const Members = {
             h("div",{class:"mem-en"}, ch.en),
             ch.cv ? h("div",{class:"mem-cv"},"CV: " + ch.cv) : null,
             h("div",{class:"mem-tags"},
-              ch.gen ? h("span",{class:"mem-tag"},`${ch.gen}期生`) : null,
+              ch.gen ? h("span",{class:"mem-tag"},t("mem.gen", ch.gen)) : null,
               units.map(u => h("span",{class:"mem-tag", style:`color:${ch.col};border-color:${ch.col}55`}, u)),
             ),
           ),
@@ -303,10 +306,20 @@ const Members = {
         ch.intro ? h("div",{class:"mem-intro"}, ch.intro) : null,
         h("div",{class:"mem-cards-link", onclick:() => {
           Gallery.f.chars = new Set([id]); App.go("gallery");
-        }}, `カードを見る（${cards.filter(c=>State.owned[c.s]).length}/${cards.length}） →`),
-      ));
+        }}, t("mem.viewCards", cards.filter(c=>State.owned[c.s]).length, cards.length)),
+      );
+    };
+    /* keep card-less members (沙知) if they have a profile */
+    const entries = Object.entries(DB.chars)
+      .filter(([ids, ch]) => DB.cards.some(c => c.c === +ids) || ch.intro);
+    const main = entries.filter(([,ch]) => !isSpecialChar(ch));
+    const others = entries.filter(([,ch]) => isSpecialChar(ch));
+    root.append(h("div",{class:"section-title"},t("mem.title"), h("small","MEMBERS")));
+    root.append(h("div",{class:"mem-grid"}, main.map(memCard)));
+    if(others.length){
+      root.append(h("div",{class:"section-title"},t("mem.others"), h("small","OTHERS")));
+      root.append(h("div",{class:"mem-grid"}, others.map(memCard)));
     }
-    root.append(grid);
   },
 };
 
@@ -315,17 +328,17 @@ const Jukebox = {
   cur:null, audio:null, useFull:true,
 
   render(root){
-    root.append(h("div",{class:"section-title"},"ジュークボックス",
-      h("small","JUKEBOX — 楽曲")));
+    root.append(h("div",{class:"section-title"},t("juke.title"),
+      h("small",t("juke.small"))));
 
     const body = h("div");
     const tabs = h("div",{class:"juke-tabs"});
     tabs.append(
-      h("button",{class:"juke-tab on"}, `♪ 楽曲（${DB.musics.length}）`),
+      h("button",{class:"juke-tab on"}, t("juke.songs", DB.musics.length)),
       h("button",{class:"chip" + (this.useFull ? " on" : ""),
         style:"margin-left:auto",
-        onclick:e => { this.useFull = !this.useFull; e.target.classList.toggle("on", this.useFull); }},
-        this.useFull ? "フルサイズ再生" : "試聴版再生"),
+        onclick:e => { this.useFull = !this.useFull; e.target.classList.toggle("on", this.useFull); e.target.textContent = this.useFull ? t("juke.full") : t("juke.preview"); }},
+        this.useFull ? t("juke.full") : t("juke.preview")),
     );
     this.renderSongs(body);
     root.append(tabs, body);
@@ -371,7 +384,7 @@ const Jukebox = {
     if(m.j){ jk.style.display = ""; jk.src = IMG.jacket(m.j); }
     else { jk.style.display = "none"; }
     document.getElementById("dock-title").textContent =
-      m.t + (this.useFull && m.full ? "（フル）" : "（試聴）");
+      m.t + (this.useFull && m.full ? t("juke.tagFull") : t("juke.tagPrev"));
     const playBtn = document.getElementById("dock-play");
     playBtn.textContent = "⏸";
     playBtn.onclick = () => {

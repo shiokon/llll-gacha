@@ -52,40 +52,40 @@ const Gallery = {
 
     /* style & mood */
     const gSt = h("div", {class:"filter-group"});
-    for(const [sid, sn] of Object.entries(STYLE)){
-      mkChip(gSt, sn, () => this.f.styles.has(+sid),
+    for(const sid of Object.keys(STYLE)){
+      mkChip(gSt, styleName(sid), () => this.f.styles.has(+sid),
         () => this.togg(this.f.styles, +sid), STYLE_C[sid]);
     }
-    for(const [mid, mn] of Object.entries(MOOD)){
-      mkChip(gSt, mn, () => this.f.moods.has(+mid),
+    for(const mid of Object.keys(MOOD)){
+      mkChip(gSt, moodName(mid), () => this.f.moods.has(+mid),
         () => this.togg(this.f.moods, +mid), MOOD_C[mid]);
     }
     bar.append(gSt);
 
     /* owned filter + display toggle + theater */
     const gOwn = h("div", {class:"filter-group"});
-    for(const [k, lab] of [["all","すべて"],["own","入手済"],["not","未入手"]]){
+    for(const [k, lab] of [["all",t("gal.all")],["own",t("gal.owned")],["not",t("gal.notOwned")]]){
       mkChip(gOwn, lab, () => this.f.owned === k, () => { this.f.owned = k; });
     }
-    mkChip(gOwn, "未入手を暗く", () => this.f.dim,
-      () => { this.f.dim = !this.f.dim; }, null, "未入手カードをグレー表示");
+    mkChip(gOwn, t("gal.dim"), () => this.f.dim,
+      () => { this.f.dim = !this.f.dim; }, null, t("gal.dimTitle"));
     gOwn.append(h("button",{class:"chip", style:"--chip-c:#ffd97a",
-      title:"表示中のカードをフルアートスライドショーで鑑賞",
+      title:t("gal.theaterTitle"),
       onclick:() => Theater.start(this.filtered())},
-      "▶ シアター"));
+      t("gal.theater")));
     bar.append(gOwn);
 
     /* search + sort */
-    const search = h("input", {placeholder:"カード名で検索…", value:this.f.q,
+    const search = h("input", {placeholder:t("gal.search"), value:this.f.q,
       oninput:e => { this.f.q = e.target.value; this.refresh(); }});
     bar.append(h("div", {class:"search-box"}, "🔍", search));
     const sel = h("select", {class:"select-sort", onchange:e => { this.f.sort = e.target.value; this.refresh(); }},
-      h("option",{value:"order"},"実装順"),
-      h("option",{value:"order-old"},"実装順（古い）"),
-      h("option",{value:"rarity"},"レアリティ"),
-      h("option",{value:"char"},"メンバー順"),
-      h("option",{value:"appeal"},"アピール値"),
-      h("option",{value:"mental"},"メンタル"),
+      h("option",{value:"order"},t("sort.order")),
+      h("option",{value:"order-old"},t("sort.orderOld")),
+      h("option",{value:"rarity"},t("sort.rarity")),
+      h("option",{value:"char"},t("sort.char")),
+      h("option",{value:"appeal"},t("sort.appeal")),
+      h("option",{value:"mental"},t("sort.mental")),
     );
     sel.value = this.f.sort;
     bar.append(sel);
@@ -180,8 +180,8 @@ const Detail = {
 
     const art = h("img", {class:"det-art", src:IMG.full(c.arts[artIdx])});
     const bgblur = h("div", {class:"bgblur", style:`background-image:url(${IMG.full(c.arts[artIdx])})`});
-    /* {sid}0 = 通常, {sid}1 = 覚醒 */
-    const evoLabel = aid => aid % 10 === 0 ? "通常" : "覚醒";
+    /* {sid}0 = normal art, {sid}1 = awakened art */
+    const evoLabel = aid => aid % 10 === 0 ? t("evo.normal") : t("evo.awakened");
     const tabs = h("div", {class:"det-evotabs"});
     c.arts.forEach((aid, i) => {
       tabs.append(h("button", {
@@ -213,11 +213,11 @@ const Detail = {
     );
 
     /* left column: name / badges / stats */
-    const statDefs = [["スマイル","--smile",0,4],["ピュア","--pure",1,5],["クール","--cool",2,6],["メンタル","--mental",3,7]];
+    const statDefs = [[t("stat.smile"),"--smile",0,4],[t("stat.pure"),"--pure",1,5],[t("stat.cool"),"--cool",2,6],[t("stat.mental"),"--mental",3,7]];
     const maxStat = Math.max(c.stat[4], c.stat[5], c.stat[6], 1);
     const stats = h("div", {class:"stats-block"});
     for(const [lab, cvar, i0, i1] of statDefs){
-      const isMental = lab === "メンタル";
+      const isMental = cvar === "--mental";
       const pct = isMental ? Math.min(100, c.stat[i1]/8) : c.stat[i1]/maxStat*100;
       const bar = h("i", {style:`--sc:var(${cvar});background:var(${cvar})`});
       stats.append(h("div", {class:"stat-row"},
@@ -236,11 +236,11 @@ const Detail = {
       ),
       h("div", {class:"badge-row"},
         h("span",{class:"badge rb", style:`background:${r.c}`}, r.n),
-        h("span",{class:"badge", style:`color:${STYLE_C[c.st]};border-color:${STYLE_C[c.st]}44`}, STYLE[c.st]||"?"),
-        h("span",{class:"badge", style:`color:${MOOD_C[c.md]};border-color:${MOOD_C[c.md]}44`}, "ムード：" + (MOOD[c.md]||"?")),
-        c.lt ? h("span",{class:"badge", style:"color:var(--gold);border-color:rgba(255,217,122,.4)"}, LIMITED[c.lt]||"限定") : null,
+        h("span",{class:"badge", style:`color:${STYLE_C[c.st]};border-color:${STYLE_C[c.st]}44`}, styleName(c.st)||"?"),
+        h("span",{class:"badge", style:`color:${MOOD_C[c.md]};border-color:${MOOD_C[c.md]}44`}, t("badge.mood", moodName(c.md)||"?")),
+        c.lt ? h("span",{class:"badge", style:"color:var(--gold);border-color:rgba(255,217,122,.4)"}, limitedName(c.lt)||limitedName(7)) : null,
         h("span",{class:"badge"}, `BP ${c.bp}`),
-        State.owned[c.s] ? h("span",{class:"badge",style:"color:var(--mint);border-color:rgba(142,229,192,.4)"},`入手済 ×${State.owned[c.s]}`) : h("span",{class:"badge"},"未入手"),
+        State.owned[c.s] ? h("span",{class:"badge",style:"color:var(--mint);border-color:rgba(142,229,192,.4)"},t("badge.owned", State.owned[c.s])) : h("span",{class:"badge"},t("badge.notOwned")),
       ),
       stats,
       this.voiceBlock(c),
@@ -276,7 +276,7 @@ const Detail = {
   voiceBlock(c){
     /* gacha voicelines only — [file, label] pairs */
     const items = (c.vo || []).filter(v => v.includes("_gacha_"))
-      .map((v, i, arr) => [v, "ガチャ" + (arr.length > 1 ? ` ${i+1}` : "")]);
+      .map((v, i, arr) => [v, t("voice.gacha") + (arr.length > 1 ? ` ${i+1}` : "")]);
     if(!items.length) return null;
     const wrap = h("div", {style:"margin-top:18px"});
     wrap.append(h("div",{style:"font-size:11px;letter-spacing:.2em;color:var(--sky);margin-bottom:8px"},

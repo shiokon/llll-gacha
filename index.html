@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>蓮ノ空カードガチャ — Hasunosora Card Gacha</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,28 +20,24 @@
     <span class="brand-txt"><b>蓮ノ空</b><small>CARD GACHA</small></span>
   </div>
   <nav id="nav">
-    <button class="nav-btn active" data-nav="home"><span class="nv-ico">⌂</span>ホーム</button>
-    <button class="nav-btn" data-nav="gacha"><span class="nv-ico">✦</span>ガチャ</button>
-    <button class="nav-btn" data-nav="gallery"><span class="nv-ico">❏</span>ギャラリー</button>
-    <button class="nav-btn" data-nav="collection"><span class="nv-ico">♡</span>コレクション</button>
-    <button class="nav-btn" data-nav="members"><span class="nv-ico">☘</span>メンバー</button>
-    <button class="nav-btn" data-nav="live"><span class="nv-ico">♬</span>ライブ</button>
-    <button class="nav-btn" data-nav="jukebox"><span class="nv-ico">♪</span>ジュークボックス</button>
+    <button class="nav-btn active" data-nav="home"><span class="nv-ico">⌂</span><span class="nv-lab">Home</span></button>
+    <button class="nav-btn" data-nav="gacha"><span class="nv-ico">✦</span><span class="nv-lab">Gacha</span></button>
+    <button class="nav-btn" data-nav="gallery"><span class="nv-ico">❏</span><span class="nv-lab">Gallery</span></button>
+    <button class="nav-btn" data-nav="collection"><span class="nv-ico">♡</span><span class="nv-lab">Collection</span></button>
+    <button class="nav-btn" data-nav="members"><span class="nv-ico">☘</span><span class="nv-lab">Members</span></button>
+    <button class="nav-btn" data-nav="live"><span class="nv-ico">♬</span><span class="nv-lab">Live</span></button>
+    <button class="nav-btn" data-nav="jukebox"><span class="nv-ico">♪</span><span class="nv-lab">Jukebox</span></button>
   </nav>
   <div class="top-right">
-    <div id="wallet" title="ペタルコイン（ダブり変換）"><span class="coin">❀</span><b id="coin-count">0</b></div>
+    <div id="wallet" title="Petal Coins"><span class="coin">❀</span><b id="coin-count">0</b></div>
+    <button id="lang-toggle" class="icon-btn" title="Language" style="font-size:11px;font-weight:800">EN</button>
     <button id="bgm-toggle" class="icon-btn" title="BGM">♪</button>
-    <button id="se-toggle" class="icon-btn" title="効果音">◉</button>
-    <button id="reset-btn" class="icon-btn" title="データリセット">↺</button>
+    <button id="se-toggle" class="icon-btn" title="SFX">◉</button>
+    <button id="reset-btn" class="icon-btn" title="Reset">↺</button>
   </div>
 </header>
 
 <main id="view"></main>
-
-<footer id="foot">
-  <p>非公式ファンメイドビューア — Link! Like! ラブライブ！ 蓮ノ空女学院スクールアイドルクラブ assets © their owners.
-  スタイル・ムード等の一部表記は推定です。</p>
-</footer>
 
 <!-- card detail modal -->
 <div id="modal" class="hidden"><div id="modal-body"></div></div>

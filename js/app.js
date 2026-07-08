@@ -32,10 +32,35 @@ const App = {
     document.getElementById("coin-count").textContent = State.coins.toLocaleString();
   },
 
+  /* apply the current UI language to the static chrome (topbar/nav) */
+  applyLang(){
+    document.documentElement.lang = State.lang;
+    document.body.classList.toggle("lang-en", State.lang === "en");
+    document.querySelectorAll(".nav-btn").forEach(b => {
+      const lab = b.querySelector(".nv-lab");
+      if(lab) lab.textContent = t("nav." + b.dataset.nav);
+    });
+    document.getElementById("wallet").title = t("title.wallet");
+    document.getElementById("se-toggle").title = t("title.se");
+    document.getElementById("reset-btn").title = t("title.reset");
+    const lt = document.getElementById("lang-toggle");
+    lt.textContent = State.lang === "ja" ? "JA" : "EN";
+    lt.title = t("title.lang");
+  },
+
   boot(){
     /* nav */
     document.querySelectorAll("[data-nav]").forEach(el =>
       el.addEventListener("click", () => this.go(el.dataset.nav)));
+
+    /* language toggle — re-renders the current page */
+    this.applyLang();
+    document.getElementById("lang-toggle").onclick = () => {
+      State.lang = State.lang === "ja" ? "en" : "ja";
+      State.save();
+      this.applyLang();
+      this.go(this.current);
+    };
 
     /* audio toggles */
     const bgmBtn = document.getElementById("bgm-toggle");
@@ -59,22 +84,22 @@ const App = {
       const close = () => modal.classList.add("hidden");
       body.replaceChildren(
         h("div",{style:"padding:34px;max-width:480px"},
-          h("div",{class:"det-name",style:"margin-bottom:6px"},"データリセット"),
+          h("div",{class:"det-name",style:"margin-bottom:6px"},t("reset.title")),
           h("div",{style:"color:var(--ink-dim);font-size:13px;line-height:1.7;margin-bottom:20px"},
-            "「ガチャデータ」は所持カード・ペタルコイン・ガチャ履歴を消去します。",
+            t("reset.desc1"),
             h("br"),
-            "「すべて」はライブのスコアや設定も含めた全データを消去します。"),
+            t("reset.desc2")),
           h("div",{style:"display:flex;flex-direction:column;gap:10px"},
             h("button",{class:"cta primary", onclick:() => {
-              if(!confirm("ガチャデータ（所持カード・コイン・履歴）を削除します。よろしいですか？")) return;
+              if(!confirm(t("reset.gachaConfirm"))) return;
               Object.assign(State, {owned:{}, coins:0, pulls:0, pity:{}, history:[], newFlags:{}});
               State.save(); location.reload();
-            }},"✦ ガチャデータをリセット"),
+            }},t("reset.gacha")),
             h("button",{class:"cta ghost", style:"border-color:#c0455f;color:#e888a0", onclick:() => {
-              if(!confirm("ライブスコア・設定を含む すべてのデータを削除します。よろしいですか？")) return;
+              if(!confirm(t("reset.allConfirm"))) return;
               localStorage.removeItem(SAVE_KEY); location.reload();
-            }},"⚠ すべてのデータをリセット"),
-            h("button",{class:"cta ghost", onclick:close},"キャンセル"),
+            }},t("reset.all")),
+            h("button",{class:"cta ghost", onclick:close},t("reset.cancel")),
           ),
         ),
       );

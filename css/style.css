@@ -42,6 +42,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:18px;
   padding:10px 22px;background:rgba(13,16,34,.72);backdrop-filter:blur(14px);
   border-bottom:1px solid var(--line);
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
 }
 .brand{display:flex;align-items:center;gap:10px;cursor:pointer;flex:0 0 auto}
 .brand-lotus{font-size:26px;background:var(--grad-main);-webkit-background-clip:text;background-clip:text;color:transparent;
@@ -70,7 +71,6 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 
 /* ───── layout ───── */
 #view{max-width:1460px;margin:0 auto;padding:26px 26px 90px;min-height:70vh}
-#foot{padding:26px;text-align:center;color:var(--ink-faint);font-size:11.5px;border-top:1px solid var(--line)}
 .section-title{
   font-size:21px;font-weight:900;letter-spacing:.05em;margin:8px 0 16px;display:flex;align-items:center;gap:12px;
 }
@@ -113,10 +113,12 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .stat-tile .tile-ico{position:absolute;right:10px;top:6px;font-size:34px;opacity:.12}
 
 .home-cols{display:grid;grid-template-columns:1.35fr 1fr;gap:20px;align-items:start}
+.home-cols>*{min-width:0}
 @media(max-width:980px){.home-cols{grid-template-columns:1fr}}
 .mini-banner{display:flex;gap:12px;align-items:center;padding:10px;border-radius:14px;cursor:pointer;transition:.2s;border:1px solid transparent}
 .mini-banner:hover{background:var(--glass);border-color:var(--line)}
-.mini-banner img{width:150px;border-radius:9px;display:block}
+.mini-banner img{width:150px;max-width:42%;border-radius:9px;display:block;flex:none}
+.mini-banner>div{min-width:0}
 .mini-banner .mb-name{font-size:13.5px;font-weight:700}
 .mini-banner .mb-date{font-size:11px;color:var(--ink-faint);font-family:Jost}
 .chibi-parade{display:flex;flex-wrap:wrap;gap:2px;justify-content:center;margin-top:26px;overflow:hidden}
@@ -180,6 +182,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 .ccard.unowned img{filter:grayscale(.92) brightness(.5)}
 .ccard.unowned::after{content:"未入手";position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
   font-size:11px;letter-spacing:.28em;color:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.25);padding:5px 12px 5px 15px;border-radius:99px;background:rgba(0,0,0,.4)}
+body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 .ccard .newtag{
   position:absolute;top:-1px;right:-1px;background:linear-gradient(120deg,#ffd97a,#ff9ec6);color:#181c33;
   font-family:Jost;font-weight:800;font-size:9.5px;letter-spacing:.14em;padding:3px 10px;border-radius:0 12px 0 12px;
@@ -509,7 +512,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
 /* ═══════════ mobile ═══════════ */
 @media(max-width:760px){
   /* top bar: brand + wallet only; nav becomes a bottom tab bar */
-  #topbar{padding:8px 12px;gap:10px}
+  #topbar{padding:8px 12px;padding-top:calc(8px + env(safe-area-inset-top,0px));gap:10px}
   .brand-txt small{display:none}
   .brand-lotus{font-size:22px}
   .brand-txt b{font-size:17px}
@@ -527,8 +530,7 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
     font-size:9.5px;letter-spacing:0;border-radius:10px}
   .nav-btn.active{background:none;box-shadow:none;color:var(--pink)}
   .nv-ico{display:block;font-size:18px;opacity:.95}
-  #view{padding:14px 12px 30px}
-  #foot{padding:20px 16px calc(86px + env(safe-area-inset-bottom))}
+  #view{padding:14px 12px calc(86px + env(safe-area-inset-bottom,0px))}
   #dock{bottom:calc(64px + env(safe-area-inset-bottom))}
   #toast-wrap{bottom:calc(72px + env(safe-area-inset-bottom));right:12px;left:12px}
   .section-title{font-size:18px}
@@ -539,6 +541,8 @@ button{font-family:inherit;color:inherit;background:none;border:none;cursor:poin
   .hero-cta{gap:9px}
   .cta{padding:11px 20px;font-size:13.5px}
   .chibi-parade img{height:62px}
+  .mini-banner img{width:118px}
+  .panel{padding:14px}
 
   /* gallery */
   .card-grid{grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:9px}

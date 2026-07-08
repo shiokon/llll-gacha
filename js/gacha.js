@@ -43,7 +43,7 @@ const Gacha = {
     list.addEventListener("scroll", () => { this._listScroll = list.scrollTop; });
 
     root.append(
-      h("div",{class:"section-title"},"ガチャ", h("small","GACHA")),
+      h("div",{class:"section-title"},t("gacha.title"), h("small","GACHA")),
       h("div",{class:"gacha-wrap"}, list, stageEl),
     );
     /* restore scroll position after full page re-renders (e.g. post-ceremony) */
@@ -72,15 +72,15 @@ const Gacha = {
       picks,
       h("div",{class:"gs-btns"},
         h("button",{class:"pull-btn p1", onclick:() => this.pull(b, pool, 1)},
-          "1回引く", h("small","SINGLE PULL")),
+          t("gacha.pull1"), h("small",t("gacha.pull1s"))),
         h("button",{class:"pull-btn p10", onclick:() => this.pull(b, pool, 10)},
-          "10回引く", h("small","10 PULL — SR以上1枚確定")),
+          t("gacha.pull10"), h("small",t("gacha.pull10s"))),
       ),
       h("div",{class:"gs-meta"},
-        h("span",{html:`累計 <b>${State.pulls}</b> 回`}),
-        h("span",{html:`このガチャの引き換えPt. <b>${pts}</b> / 600`}),
+        h("span",{html:t("gacha.total", State.pulls)}),
+        h("span",{html:t("gacha.pts", pts)}),
         pts >= 600 && b.picks.length ?
-          h("button",{class:"chip on", onclick:() => this.spark(b)},"✦ 600pt交換：ピックアップ獲得") : null,
+          h("button",{class:"chip on", onclick:() => this.spark(b)},t("gacha.spark")) : null,
       ),
       h("div",{class:"gs-rates"}, this.rateText(pool)),
     );
@@ -127,10 +127,10 @@ const Gacha = {
   },
 
   rateText(pool){
-    const parts = pool.tiers.map(t => `${t.key} ${(t.rate*100).toFixed(t.rate<.01?1:0)}%`);
-    const rRate = 1 - pool.tiers.reduce((s,t) => s + t.rate, 0);
+    const parts = pool.tiers.map(tr => `${tr.key} ${(tr.rate*100).toFixed(tr.rate<.01?1:0)}%`);
+    const rRate = 1 - pool.tiers.reduce((s,tr) => s + tr.rate, 0);
     parts.push(`R ${(rRate*100).toFixed(1)}%`);
-    return `提供割合（本サイト独自）: ${parts.join(" ／ ")}　※10連の10枚目はSR以上確定・UR/SRのピックアップは各枠の半分を占有・LR/BRはピックアップのみ排出（枠内で均等割り）・ダブりはペタルコインに変換`;
+    return t("gacha.rates", parts.join(" ／ "));
   },
 
   drawFromTier(t){
@@ -187,8 +187,8 @@ const Gacha = {
     const body = document.getElementById("modal-body");
     body.replaceChildren(
       h("div",{style:"padding:30px"},
-        h("div",{class:"det-name",style:"margin-bottom:6px"},"引き換えPt.交換"),
-        h("div",{style:"color:var(--ink-dim);font-size:13px;margin-bottom:18px"},"600pt を消費して、ピックアップカードを1枚選んで獲得できます。"),
+        h("div",{class:"det-name",style:"margin-bottom:6px"},t("gacha.sparkTitle")),
+        h("div",{style:"color:var(--ink-dim);font-size:13px;margin-bottom:18px"},t("gacha.sparkDesc")),
         h("div",{class:"res-grid"},
           b.picks.map((sid,i) => {
             const c = CARD_BY_S[sid];
@@ -201,7 +201,7 @@ const Gacha = {
                 State.save(); App.updateWallet();
                 Detail.close();
                 Audio_.se("se_gacha_urget_0001");
-                toast(`✦ <b>${esc(c.n)}</b> を交換しました！`);
+                toast(t("gacha.sparkDone", esc(c.n)));
                 App.go("gacha");
               }},
               h("img",{src:IMG.thumb(c.th)}),
@@ -246,7 +246,7 @@ const Ceremony = {
     const packImg = h("img",{class:"pk", src: b.pack ? IMG.pack(b.id) : IMG.banner(b.id)});
     const tearImg = h("img",{class:"cer-tear"});
     const wrap = h("div",{class:"cer-packwrap"}, packImg, b.pack ? tearImg : null);
-    const hint = h("div",{class:"cer-hint"},"タップして開封");
+    const hint = h("div",{class:"cer-hint"},t("cer.open"));
     stage.append(wrap, hint);
 
     /* preload tear frames + the opened-pack art while the pack floats */
@@ -333,7 +333,7 @@ const Ceremony = {
     const n = gains.length;
     stage.replaceChildren();
     const ring = h("div",{class:"cer-ring"});
-    const hint = h("div",{class:"cer-tap"},"タップでカードをめくる");
+    const hint = h("div",{class:"cer-tap"},t("cer.flip"));
     stage.append(ring, hint);
     gains.forEach((g, i) => {
       const ang = n === 1 ? 0 : 30 + i * (360 / n);
@@ -366,7 +366,7 @@ const Ceremony = {
         h("div",{class:"fr-nm"}, c.n),
       ),
     );
-    const tap = h("div",{class:"cer-tap", style:"opacity:0"},"タップで次へ");
+    const tap = h("div",{class:"cer-tap", style:"opacity:0"},t("cer.next"));
     stage.append(card, tap);
 
     /* the back shows briefly, then the card flips on its own
@@ -419,12 +419,12 @@ const Ceremony = {
       h("div",{class:"res-title"},"RESULTS"),
       grid,
       h("div",{class:"res-btns"},
-        h("button",{class:"cta ghost", onclick:() => this.close()},"閉じる"),
+        h("button",{class:"cta ghost", onclick:() => this.close()},t("cer.close")),
         h("button",{class:"cta primary", onclick:() => {
           this.close(false);
           const pool = Gacha.buildPool(b);
           Gacha.pull(b, pool, gains.length);
-        }},`もう一度 ${gains.length}連 ✦`),
+        }},t("cer.again", gains.length)),
       ),
     );
     cer.append(wrap);

@@ -55,8 +55,8 @@ const LiveStage = {
             c._guest ? h("span",{class:"ls-guest"},"GUEST") : null,
           ))),
         h("div",{class:"ls-unit-meta"},
-          h("div",{class:"ls-appeal"},"アピール ", h("b", this.unitAppeal(u).toLocaleString())),
-          h("button",{class:"chip", onclick:() => this.unitPicker(drawUnit)},"⇄ 編成"),
+          h("div",{class:"ls-appeal"},t("live.appeal"), h("b", this.unitAppeal(u).toLocaleString())),
+          h("button",{class:"chip", onclick:() => this.unitPicker(drawUnit)},t("live.edit")),
         ),
       );
     };
@@ -70,7 +70,7 @@ const LiveStage = {
       spdVal.textContent = this.speed().toFixed(1);
     };
     const speedCtl = h("div",{class:"ls-speed"},
-      h("span","スピード"),
+      h("span",t("live.speed")),
       h("button",{class:"chip", onclick:() => setSpeed(-.5)},"−"),
       spdVal,
       h("button",{class:"chip", onclick:() => setSpeed(+.5)},"＋"),
@@ -120,9 +120,9 @@ const LiveStage = {
       const top = [...played].sort((a, b) => b.sc - a.sc).slice(0, 3);
       statsEl = h("div",{class:"ls-stats"},
         h("div",{class:"ls-stat-total"},
-          h("span","トータルスコア"),
+          h("span",t("live.totalScore")),
           h("b", total.toLocaleString()),
-          h("small",`${played.length} 譜面クリア`)),
+          h("small",t("live.cleared", played.length))),
         h("div",{class:"ls-stat-top"},
           top.map((p, i) => h("div",{class:"ls-top-row"},
             h("span",{class:"ls-top-no"}, ["1st","2nd","3rd"][i]),
@@ -133,22 +133,22 @@ const LiveStage = {
       );
     }
 
-    root.append(
-      h("div",{class:"section-title"},"スクールアイドルショウ",
-        h("small",`SCHOOL IDOL SHOW — 実譜面 ${songs.length}曲`)),
+    root.append(...[
+      h("div",{class:"section-title"},t("live.title"),
+        h("small",t("live.small", songs.length))),
       statsEl,
       h("div",{class:"ls-head"},
         unitRow, speedCtl,
-        h("div",{class:"ls-help"},"S・D・F・J・K・L キー、またはレーンをタップ。緑フリックはタップでOK、黄トレースはキーを押しっぱなしで拾えます。"),
+        h("div",{class:"ls-help"},t("live.help")),
       ),
       diffRow, grid,
-    );
+    ].filter(Boolean));
   },
 
   unitPicker(onDone){
     const owned = DB.cards.filter(c => State.owned[c.s])
       .sort((a,b) => this.appealOf(b) - this.appealOf(a));
-    if(!owned.length){ toast("カードを入手すると編成できます（未入手の間はゲストが出演）"); return; }
+    if(!owned.length){ toast(t("live.needCards")); return; }
     let sel = this.unitCards().filter(c => !c._guest).map(c => c.s);
     const ov = h("div",{class:"ls-picker-ov", onclick:e => { if(e.target === ov) close(); }});
     const gridEl = h("div",{class:"ls-picker-grid"});
@@ -171,8 +171,8 @@ const LiveStage = {
     };
     draw();
     ov.append(h("div",{class:"ls-picker"},
-      h("div",{class:"ls-picker-head"},"ユニット編成（", cnt, "/3）",
-        h("button",{class:"chip", style:"margin-left:auto", onclick:close},"決定")),
+      h("div",{class:"ls-picker-head"},t("live.pickerPre"), cnt, t("live.pickerPost"),
+        h("button",{class:"chip", style:"margin-left:auto", onclick:close},t("live.done"))),
       gridEl,
     ));
     document.body.append(ov);
@@ -217,7 +217,7 @@ const LiveGame = {
     const chartData = await this.loadChart(m.id);
     const ch = chartData && chartData[diffKey];
     if(!ch){
-      toast("譜面データが見つかりません");
+      toast(t("live.noChart"));
       this.active = false;
       return;
     }
@@ -252,7 +252,7 @@ const LiveGame = {
         h("div",{class:"lg-unit"},
           unit.map(c => h("img",{src:IMG.thumb(c.th), title:c.n}))),
         spBtn,
-        h("button",{class:"lg-quit", title:"やめる (Esc)"},"✕"),
+        h("button",{class:"lg-quit", title:t("live.quit")},"✕"),
       ),
     );
     document.body.append(ov);
@@ -687,20 +687,20 @@ const LiveGame = {
         fc ? h("div",{class:"lg-res-fc"},"✦ FULL COMBO ✦") : null,
         h("div",{class:"lg-res-song"}, m.t + " — " + D.label),
         h("div",{class:"lg-res-score"}, sc.toLocaleString()),
-        h("div",{class:"lg-res-acc"}, "精度 " + (acc * 100).toFixed(1) + "%　最大コンボ " + G.maxCombo),
+        h("div",{class:"lg-res-acc"}, t("live.result", (acc * 100).toFixed(1), G.maxCombo)),
         h("div",{class:"lg-res-counts"},
           Object.entries(G.counts).map(([k,v]) =>
             h("span",{class:"lg-rc " + k.toLowerCase()}, k + " " + v))),
-        h("div",{class:"lg-res-coins"},"❀ +" + coins.toLocaleString() + " ペタルコイン"),
+        h("div",{class:"lg-res-coins"},t("live.coins", coins.toLocaleString())),
         h("div",{class:"lg-res-btns"},
           h("button",{class:"cta primary", onclick:() => {
             resBgm.pause(); res.remove(); ov.remove(); this.active = false;
             LiveGame.start(m, unit, diffKey);
-          }},"もう一度"),
+          }},t("live.retry")),
           h("button",{class:"cta ghost", onclick:() => {
             resBgm.pause(); ov.remove(); this.active = false;
             App.go("live");
-          }},"曲をえらぶ"),
+          }},t("live.songSel")),
         ),
       );
       ov.append(res);
