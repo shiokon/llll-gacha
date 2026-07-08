@@ -38,7 +38,6 @@ banner_ids = {int(x) for x in disk_ids("banner")}
 pack_ids   = {int(x) for x in disk_ids("pack")}
 chibi_ids  = {int(x) for x in disk_ids("chibi")}
 jacket_ids = {int(x) for x in disk_ids("jacket")}
-bgm_ids    = {int(x) for x in disk_ids("bgm", ".m4a")}
 live_ids   = {int(x) for x in disk_ids("live", ".m4a")}
 ost_files  = disk_ids("ost", ".m4a")
 voice_files = sorted(disk_ids("voice", ".m4a"))
@@ -181,6 +180,12 @@ def make_entry(sid, name, rows, cid):
         "stat": [r0["InitialSmile"], r0["InitialPure"], r0["InitialCool"], r0["InitialMental"],
                  rN["MaxSmile"], rN["MaxPure"], rN["MaxCool"], rN["MaxMental"]],
         "bp": rN["BeatPoint"],
+        # CardSeries.Id IS the sticker/true id space — key by sid directly.
+        # (Its EvolutionXId columns are formulaic Id*10+stage and the CardDatas
+        # rows AT those ids belong to the catalog-next card, so never join
+        # through them for identity.) LimitedType: 1-4 = spring/summer/autumn/
+        # winter 期間限定, 5 = graduation, 9 = birthday, 11 = PARTY!,
+        # 101 = non-gacha reward, 201-204 = collabs — labels live in util.js.
         "lt": card_series.get(sid, {}).get("LimitedType", 0),
         "o": min(r["OrderId"] for r in rows),
         "evo": len(rows) - 1,
@@ -313,10 +318,12 @@ banners_out.sort(key=lambda b: b["start"], reverse=True)
 print("banners:", len(banners_out), "| with picks:", sum(1 for b in banners_out if b["picks"]))
 
 # ---- musics ------------------------------------------------------------------------
+# full-length audio only (no previews are shipped); songs without a rhythm-game
+# chart are dropped after the chart pass below
 musics_out = []
 for m in musics:
     jid, sndid = m.get("JacketId", 0), m.get("SoundId", 0)
-    if sndid not in bgm_ids:
+    if sndid not in live_ids:
         continue
     musics_out.append({
         "id": m["Id"],
@@ -330,12 +337,11 @@ for m in musics:
         "sing": [int(x) for x in str(m.get("SingerCharacterId", "")).split(",") if x.strip().isdigit()],
         "desc": m.get("Description", ""),
         "o": m.get("OrderId", 0),
+        "full": 1,
     })
-    if sndid in live_ids:
-        musics_out[-1]["full"] = 1
-        bpm = live_meta.get(str(sndid), {}).get("bpm", 0)
-        if bpm:
-            musics_out[-1]["bpm"] = bpm
+    bpm = live_meta.get(str(sndid), {}).get("bpm", 0)
+    if bpm:
+        musics_out[-1]["bpm"] = bpm
 # dedupe by sound id (multiple music entries can share audio)
 seen = set()
 musics_dedup = []
@@ -349,11 +355,101 @@ print("musics:", len(musics_dedup))
 # ---- rhythm game charts (rhythmgame_chart_{musicId}_{01..04}.bytes) ----------------
 # Each file is raw-deflate (zlib wbits=-15) JSON: {Notes, Bpms, Offset, Beats}.
 # Note.Flags = left<<16 | right<<4 | type on a 0..59 bar (4 keys x 15).
-# type: 0=tap 2/3=flick 1=hold. Hold L/R are scaled x65; hold segments chain
-# via holds[0] == next segment's just (sliding polylines); last holds entry of
-# the final segment is the release time.
+# type: 0=tap 2/3=flick 1=hold. Hold L/R are scaled x65.
+#
+# A type-1 row's `holds` list = waypoint TIMES; the LAST one is that row's
+# release. Slides are emitted as ~49-98ms sample rows that tile: one row's
+# release == the next row's just — but the source has ~µs formatting jitter
+# (e.g. 3.552632 vs 3.552634), so links need a tolerance, never exact
+# equality. TWO rules decide where one hold NOTE ends and the next begins
+# (consecutive separate holds tile in time exactly like slide samples do):
+#   1. a multi-element row is a static ticked tail (score ticks + release)
+#      and TERMINATES its note — never chain out of it;
+#   2. slide samples move <= ~6 lanes per step, while back-to-back separate
+#      notes jump sides (e.g. 38 lanes) — reject candidates >12 lanes away.
+# Same-time candidates (side-by-side double slides) pick the nearest left
+# edge. Finally, the source sometimes layers 2-3 duplicate copies of a note
+# ~1ms apart — superposed copies get deduped (kept, they demand impossible
+# re-presses on keys).
+import bisect
 import zlib
-DIFF_NAMES = {1: "NORMAL", 2: "HARD", 3: "EXTREME", 4: "MASTER"}
+DIFF_NAMES = {1: "NORMAL", 2: "HARD", 3: "EXPERT", 4: "MASTER"}
+LINK_TOL = 5e-4
+
+def _span_at(pts, t):
+    if t <= pts[0][0]: return pts[0][1], pts[0][2]
+    for a, b in zip(pts, pts[1:]):
+        if a[0] <= t <= b[0]:
+            f = 0 if b[0] == a[0] else (t - a[0]) / (b[0] - a[0])
+            return a[1] + (b[1]-a[1])*f, a[2] + (b[2]-a[2])*f
+    return pts[-1][1], pts[-1][2]
+
+def _dedupe_holds(holds):
+    """drop the shorter of any pair tracing the same lanes (<=1.5 on both
+       edges) over >=60% of the shorter one's life; true doubles/gathers
+       differ by >=3 lanes and survive"""
+    drop = set()
+    for i in range(len(holds)):
+        if i in drop: continue
+        for j in range(i+1, len(holds)):
+            if j in drop: continue
+            a, b = holds[i], holds[j]
+            t0 = max(a[0][0], b[0][0]); t1 = min(a[-1][0], b[-1][0])
+            short = min(a[-1][0]-a[0][0], b[-1][0]-b[0][0])
+            if short <= 0 or (t1 - t0) < 0.6 * short: continue
+            if all(abs(x-y) <= 1.5
+                   for k in range(7)
+                   for (x, y) in zip(*(_span_at(p, t0 + (t1-t0)*k/6) for p in (a, b)))):
+                drop.add(j if (b[-1][0]-b[0][0]) <= (a[-1][0]-a[0][0]) else i)
+                if i in drop: break
+    return [h for k, h in enumerate(holds) if k not in drop]
+
+def _build_holds(notes):
+    segs = sorted((n for n in notes if n["Flags"] & 15 == 1), key=lambda n: float(n["just"]))
+    starts = [float(n["just"]) for n in segs]
+    consumed, out = set(), []
+    for head in segs:
+        if id(head) in consumed:
+            continue
+        pts, cur = [], head
+        consumed.add(id(cur))
+        while True:
+            fl = cur["Flags"]
+            curL = fl >> 16
+            pts.append([round(float(cur["just"]), 3),
+                        round(curL / 65, 2),
+                        round(((fl & 0xFFFF) >> 4) / 65, 2)])
+            rel = float(cur["holds"][-1]) if cur["holds"] else float(cur["just"])
+            if len(cur["holds"] or []) != 1:   # ticked tail = note end
+                if rel > pts[-1][0]:
+                    pts.append([round(rel, 3), pts[-1][1], pts[-1][2]])
+                break
+            lo = bisect.bisect_left(starts, rel - LINK_TOL)
+            cands = []
+            for k in range(lo, len(starts)):
+                if starts[k] > rel + LINK_TOL:
+                    break
+                c = segs[k]
+                if id(c) not in consumed and abs((c["Flags"] >> 16) - curL) / 65 <= 12:
+                    cands.append(c)
+            if not cands:
+                if rel > pts[-1][0]:
+                    pts.append([round(rel, 3), pts[-1][1], pts[-1][2]])
+                break
+            nxt = min(cands, key=lambda c: abs((c["Flags"] >> 16) - curL))
+            consumed.add(id(nxt)); cur = nxt
+        # collapse knots <12ms apart (1-2ms duplicate-row hops leave
+        # near-vertical micro-kinks in the ribbon); the head keeps its
+        # press timing, the tail keeps the release
+        clean = [pts[0]]
+        for p in pts[1:]:
+            if p[0] - clean[-1][0] >= 0.012:
+                clean.append(p)
+            elif len(clean) > 1:
+                clean[-1] = p
+        out.append(clean if len(clean) >= 2 else pts)
+    out.sort(key=lambda p: p[0][0])
+    return _dedupe_holds(out)
 charts_dir = os.path.join(SITE, "data", "charts")
 os.makedirs(charts_dir, exist_ok=True)
 plain_dir = os.path.join(BASE, "plain")
@@ -364,7 +460,7 @@ for f in os.listdir(plain_dir):
         chart_files[int(m.group(1))][int(m.group(2))] = f
 
 music_by_id = {m["id"]: m for m in musics_dedup}
-n_chart_songs = dup_starts = 0
+n_chart_songs = tap_dupes = 0
 for mid, dmap in sorted(chart_files.items()):
     mu = music_by_id.get(mid)
     if not mu or not mu.get("full"):
@@ -372,48 +468,20 @@ for mid, dmap in sorted(chart_files.items()):
     song, counts = {}, {}
     for dnum, fn in sorted(dmap.items()):
         cj = json.loads(zlib.decompress(open(os.path.join(plain_dir, fn), "rb").read(), -15))
-        taps, holds = [], []
+        taps = []
         for n in cj["Notes"]:
             fl = n["Flags"]; typ = fl & 15
             if typ != 1:
                 taps.append([round(float(n["just"]), 3), fl >> 16, (fl & 0xFFFF) >> 4, typ])
-        # holds: walk chains earliest-head-first; a continuation is always later
-        # than its head, so any not-yet-consumed segment reached in time order is
-        # a new head. Simultaneous double-slides share 'just' times — pick the
-        # unconsumed candidate whose left edge is nearest to the current segment.
-        t1 = sorted((n for n in cj["Notes"] if n["Flags"] & 15 == 1),
-                    key=lambda n: float(n["just"]))
-        by_start = defaultdict(list)
-        for n in t1:
-            by_start[n["just"]].append(n)
-        consumed = set()
-        for n in t1:
-            if id(n) in consumed:
-                continue
-            pts, cur = [], n
-            consumed.add(id(n))
-            while True:
-                fl2 = cur["Flags"]
-                curL = fl2 >> 16
-                pts.append([round(float(cur["just"]), 3),
-                            round(curL / 65, 2),
-                            round(((fl2 & 0xFFFF) >> 4) / 65, 2)])
-                nxt = None
-                if cur["holds"] and cur["holds"][0] != cur["just"]:
-                    cands = [c for c in by_start.get(cur["holds"][0], [])
-                             if id(c) not in consumed]
-                    if len(cands) > 1:
-                        dup_starts += 1
-                    if cands:
-                        nxt = min(cands, key=lambda c: abs((c["Flags"] >> 16) - curL))
-                if nxt is None:
-                    end = float(cur["holds"][-1]) if cur["holds"] else float(cur["just"])
-                    if end > pts[-1][0]:
-                        pts.append([round(end, 3), pts[-1][1], pts[-1][2]])
-                    break
-                consumed.add(id(nxt)); cur = nxt
-            holds.append(pts)
-        taps.sort(key=lambda x: x[0]); holds.sort(key=lambda p: p[0][0])
+        taps.sort(key=lambda x: x[0])
+        # layered-duplicate artifact affects taps too: same lanes a few ms apart
+        dd = []
+        for tp in taps:
+            if any(abs(q[0]-tp[0]) <= 0.005 and q[1] == tp[1] and q[2] == tp[2] for q in dd[-8:]):
+                tap_dupes += 1; continue
+            dd.append(tp)
+        taps = dd
+        holds = _build_holds(cj["Notes"])
         song[DIFF_NAMES[dnum]] = {"taps": taps, "holds": holds}
         counts[DIFF_NAMES[dnum]] = len(taps) + len(holds)
     with open(os.path.join(charts_dir, f"{mid}.js"), "w", encoding="utf-8") as f:
@@ -422,7 +490,10 @@ for mid, dmap in sorted(chart_files.items()):
         f.write(";")
     mu["chart"] = counts
     n_chart_songs += 1
-print("charts:", n_chart_songs, "songs | duplicate hold-start collisions:", dup_starts)
+print("charts:", n_chart_songs, "songs | duplicate taps removed:", tap_dupes)
+# jukebox == live catalog: ship only songs that ended up with a chart
+musics_dedup = [m for m in musics_dedup if m.get("chart")]
+print("musics kept (full + chart):", len(musics_dedup))
 
 # ---- OST sound test (plain/offlinebgms.tsv — binary columnar master table) ---------
 # layout: da 00 00 | varint header_len | varint rows | varint cols |

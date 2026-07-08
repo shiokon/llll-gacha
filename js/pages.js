@@ -258,7 +258,7 @@ const Theater = {
     const m = DB.musics[Math.random()*DB.musics.length|0];
     if(!m) return;
     if(this.audio) this.audio.pause();
-    const a = new Audio(AUD.bgm(m.snd));
+    const a = new Audio(AUD.live(m.snd));
     a.volume = .4;
     a.play().catch(()=>{});
     a.onended = () => { if(this.el) this.playSong(); };
@@ -318,9 +318,9 @@ const Members = {
   },
 };
 
-/* ───── jukebox (songs full/preview) ───── */
+/* ───── jukebox (full songs — the chart-bearing 154) ───── */
 const Jukebox = {
-  cur:null, audio:null, useFull:true,
+  cur:null, audio:null,
 
   render(root){
     root.append(h("div",{class:"section-title"},t("juke.title"),
@@ -328,13 +328,7 @@ const Jukebox = {
 
     const body = h("div");
     const tabs = h("div",{class:"juke-tabs"});
-    tabs.append(
-      h("button",{class:"juke-tab on"}, t("juke.songs", DB.musics.length)),
-      h("button",{class:"chip" + (this.useFull ? " on" : ""),
-        style:"margin-left:auto",
-        onclick:e => { this.useFull = !this.useFull; e.target.classList.toggle("on", this.useFull); e.target.textContent = this.useFull ? t("juke.full") : t("juke.preview"); }},
-        this.useFull ? t("juke.full") : t("juke.preview")),
-    );
+    tabs.append(h("button",{class:"juke-tab on"}, t("juke.songs", DB.musics.length)));
     this.renderSongs(body);
     root.append(tabs, body);
   },
@@ -351,7 +345,6 @@ const Jukebox = {
           h("div",{class:"juke-title"}, m.t),
           h("div",{class:"juke-sub"}, unitName + (m.desc && m.desc !== unitName ? "・" + m.desc : "")),
         ),
-        m.full ? h("span",{class:"juke-full"},"FULL") : null,
         h("div",{class:"juke-eq"}, h("i"), h("i"), h("i")),
       );
       grid.append(el);
@@ -368,8 +361,7 @@ const Jukebox = {
     Audio_.stopBgm(true);
     this.cur = m;
     el && el.classList.add("playing");
-    const src = this.useFull && m.full ? AUD.live(m.snd) : AUD.bgm(m.snd);
-    const a = new Audio(src);
+    const a = new Audio(AUD.live(m.snd));
     a.volume = .55;
     a.play().catch(()=>{});
     this.audio = a;
@@ -378,8 +370,7 @@ const Jukebox = {
     const jk = document.getElementById("dock-jacket");
     if(m.j){ jk.style.display = ""; jk.src = IMG.jacket(m.j); }
     else { jk.style.display = "none"; }
-    document.getElementById("dock-title").textContent =
-      m.t + (this.useFull && m.full ? t("juke.tagFull") : t("juke.tagPrev"));
+    document.getElementById("dock-title").textContent = m.t;
     const playBtn = document.getElementById("dock-play");
     playBtn.textContent = "⏸";
     playBtn.onclick = () => {
@@ -387,9 +378,21 @@ const Jukebox = {
       else { a.pause(); playBtn.textContent = "▶"; }
     };
     document.getElementById("dock-close").onclick = () => this.stop();
+    /* timeline: click to seek, hold-and-drag to scrub. handlers rebind per
+       song (like the buttons above) so the closure targets the current audio */
+    const bar = dock.querySelector(".dock-bar");
+    const prog = document.getElementById("dock-progress");
+    const seek = e => {
+      if(!a.duration) return;
+      const r = bar.getBoundingClientRect();
+      const f = Math.min(Math.max((e.clientX - r.left) / r.width, 0), 1);
+      a.currentTime = f * a.duration;
+      prog.style.width = f * 100 + "%";
+    };
+    bar.onpointerdown = e => { e.preventDefault(); bar.setPointerCapture(e.pointerId); seek(e); };
+    bar.onpointermove = e => { if(e.buttons & 1) seek(e); };
     a.ontimeupdate = () => {
-      document.getElementById("dock-progress").style.width =
-        (a.duration ? a.currentTime/a.duration*100 : 0) + "%";
+      prog.style.width = (a.duration ? a.currentTime/a.duration*100 : 0) + "%";
     };
     a.onended = () => {
       /* autoplay next track */

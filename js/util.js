@@ -15,7 +15,6 @@ const IMG = {
 const AUD = {
   se:    n => `${ASSET}se/${n}.m4a`,
   voice: n => `${ASSET}voice/${n}.m4a`,
-  bgm:   n => `${ASSET}bgm/${n}.m4a`,
   live:  n => `${ASSET}live/${n}.m4a`,
 };
 
@@ -36,8 +35,17 @@ const STYLE_C = {1:"#ff9ec6",2:"#ffd066",3:"#8ee5c0",4:"#b48cff"};
 const MOOD = {1:"ハッピー",2:"ニュートラル",3:"メロウ"};
 const MOOD_EN = {1:"Happy",2:"Neutral",3:"Mellow"};
 const MOOD_C = {1:"#ffb066",2:"#8ee5c0",3:"#8fa8ff"};
-const LIMITED = {0:"恒常",1:"期間限定",2:"フェス限定",3:"コラボ",4:"イベント",5:"スペシャル",6:"リンクラ限定",7:"限定"};
-const LIMITED_EN = {0:"Permanent",1:"Limited",2:"Fes Limited",3:"Collab",4:"Event",5:"Special",6:"Link!Like Limited",7:"Limited"};
+/* CardSeries.LimitedType, decoded from the banner history each value debuts in:
+   1-4 = seasonal 期間限定 (SPRING/SUMMER/AUTUMN/WINTER LIMITED COLLECTION),
+   5 = GRADUATION, 9 = BIRTHDAY (BR), 11 = PARTY!, 101 = never in any gacha
+   (event/story rewards), 201-204 = Aikatsu!/O.N.G.E.K.I./BanG Dream!/SHUFFLE.
+   7 stays as the fallback label for values this table doesn't know. */
+const LIMITED = {0:"恒常",1:"期間限定（春）",2:"期間限定（夏）",3:"期間限定（秋）",4:"期間限定（冬）",
+                 5:"卒業限定",7:"限定",9:"バースデー限定",11:"パーティー限定",101:"イベント配布",
+                 201:"アイカツ！コラボ",202:"オンゲキコラボ",203:"バンドリ！コラボ",204:"シャッフル限定"};
+const LIMITED_EN = {0:"Permanent",1:"Spring Limited",2:"Summer Limited",3:"Autumn Limited",4:"Winter Limited",
+                    5:"Graduation Limited",7:"Limited",9:"Birthday Limited",11:"Party Limited",101:"Event Reward",
+                    201:"Aikatsu! Collab",202:"O.N.G.E.K.I. Collab",203:"BanG Dream! Collab",204:"Shuffle Limited"};
 const UNIT_C = {101:"#f5b1cc",102:"#8fa8d8",103:"#f7d277",105:"#b48cff",100:"#9aa3c7",104:"#9aa3c7",201:"#9aa3c7"};
 
 /* quick DB indexes */
@@ -72,6 +80,19 @@ const State = {
   ownCount(){ return Object.keys(this.owned).length; },
 };
 State.load();
+/* tier-3 difficulty was renamed EXTREME -> EXPERT (the game's real name);
+   carry saved best scores over once */
+{
+  const old = Object.keys(State.live || {}).filter(k => k.endsWith("_EXTREME"));
+  if(old.length){
+    for(const k of old){
+      const nk = k.slice(0, -8) + "_EXPERT";
+      if(!(nk in State.live)) State.live[nk] = State.live[k];
+      delete State.live[k];
+    }
+    State.save();
+  }
+}
 
 /* ───── UI language (card data itself stays Japanese) ───── */
 const I18N = {
@@ -122,8 +143,6 @@ const I18N = {
     "live.retry":"Retry","live.songSel":"Song Select",
     "juke.title":"Jukebox","juke.small":"JUKEBOX — SONGS",
     "juke.songs":n=>`♪ Songs (${n})`,
-    "juke.full":"Full-size playback","juke.preview":"Preview playback",
-    "juke.tagFull":"(Full)","juke.tagPrev":"(Preview)",
     "th.hint":"CLICK / → Next　ESC Exit","th.noCards":"No cards to display",
     "reset.title":"Reset Data",
     "reset.desc1":"“Gacha data” clears owned cards, petal coins and pull history.",
@@ -179,8 +198,6 @@ const I18N = {
     "live.retry":"もう一度","live.songSel":"曲をえらぶ",
     "juke.title":"ジュークボックス","juke.small":"JUKEBOX — 楽曲",
     "juke.songs":n=>`♪ 楽曲（${n}）`,
-    "juke.full":"フルサイズ再生","juke.preview":"試聴版再生",
-    "juke.tagFull":"（フル）","juke.tagPrev":"（試聴）",
     "th.hint":"CLICK / → 次へ　ESC 終了","th.noCards":"表示できるカードがありません",
     "reset.title":"データリセット",
     "reset.desc1":"「ガチャデータ」は所持カード・ペタルコイン・ガチャ履歴を消去します。",
@@ -252,9 +269,13 @@ const Audio_ = {
     this.bgmEl = null; this.bgmName = null;
     if(!el) return;
     if(instant){ el.pause(); return; }
-    this.fadeTimer = setInterval(() => {
+    /* fade on a LOCAL timer: bgmEl is already detached, so a playBgm/stopBgm
+       arriving mid-fade (e.g. the live tab starting its menu bgm) must not be
+       able to cancel it — a cleared shared timer would leave the element
+       looping forever with no reference to stop it */
+    const iv = setInterval(() => {
       el.volume = Math.max(0, el.volume - 0.05);
-      if(el.volume <= 0){ el.pause(); clearInterval(this.fadeTimer); }
+      if(el.volume <= 0){ el.pause(); clearInterval(iv); }
     }, 50);
   },
 };

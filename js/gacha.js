@@ -276,33 +276,39 @@ const Ceremony = {
       }
     }
 
-    /* wait for the tap, then tear the pack open */
+    /* wait for the tap, then tear the pack open. a SKIP here (or anywhere
+       below) drops every remaining phase and cuts straight to the results —
+       showing the tear img without a src paints a broken-image box */
     await this.tapOnly(wrap);
-    wrap.classList.add("shaking");
-    Audio_.se("se_gacha_start_0002");
-    if(frames.length && frames[0].complete && frames[0].naturalWidth){
-      wrap.classList.remove("shaking");
-      tearImg.style.display = "block";
-      for(let i = 0; i < frames.length; i++){
-        if(this.skipFlag) break;
-        if(frames[i].naturalWidth) tearImg.src = frames[i].src;
-        /* the pack itself switches to the torn/open art as the strip lifts */
-        if(i === 2 && openPack && openPack.naturalWidth) packImg.src = openPack.src;
-        await new Promise(r => setTimeout(r, 30));
+    if(!this.skipFlag){
+      wrap.classList.add("shaking");
+      Audio_.se("se_gacha_start_0002");
+      if(frames.length && frames[0].complete && frames[0].naturalWidth){
+        wrap.classList.remove("shaking");
+        tearImg.style.display = "block";
+        for(let i = 0; i < frames.length; i++){
+          if(this.skipFlag) break;
+          if(frames[i].naturalWidth) tearImg.src = frames[i].src;
+          /* the pack itself switches to the torn/open art as the strip lifts */
+          if(i === 2 && openPack && openPack.naturalWidth) packImg.src = openPack.src;
+          await new Promise(r => setTimeout(r, 30));
+        }
+        await this.wait(120);
+      } else {
+        await this.wait(600);
       }
-      await this.wait(120);
-    } else {
-      await this.wait(600);
     }
-    Audio_.se("se_gacha_start_0003");
-    flash.classList.add("go");
-    this.burst(innerWidth/2, innerHeight/2, 90);
-    await this.wait(350);
+    if(!this.skipFlag){
+      Audio_.se("se_gacha_start_0003");
+      flash.classList.add("go");
+      this.burst(innerWidth/2, innerHeight/2, 90);
+      await this.wait(350);
+    }
     wrap.remove(); hint.remove();
     stage.querySelectorAll(".cer-beam").forEach(x=>x.remove());
 
     /* ── phase 2: rarity ring preview ── */
-    await this.ringPhase(stage, gains);
+    if(!this.skipFlag) await this.ringPhase(stage, gains);
 
     /* ── phase 3: one-by-one reveals, clockwise ring order ── */
     const counter = h("div",{class:"cer-count"});
@@ -402,7 +408,7 @@ const Ceremony = {
     const cer = this.el;
     cer.querySelectorAll(".cer-stage,.cer-count").forEach(x=>x.remove());
     Audio_.playBgm("bgm_gacha_result_0001", .3);
-    const grid = h("div",{class:"res-grid"});
+    const grid = h("div",{class:"res-grid" + (gains.length === 1 ? " solo" : "")});
     gains.forEach((g, i) => {
       const r = rarOf(g.c);
       grid.append(h("div",{class:"res-card",

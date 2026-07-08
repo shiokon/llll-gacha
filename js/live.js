@@ -11,7 +11,7 @@ const LiveStage = {
   DIFFS:{
     NORMAL: {label:"NORMAL",  col:"#7fd4f0"},
     HARD:   {label:"HARD",    col:"#ffd066"},
-    EXTREME:{label:"EXTREME", col:"#ff8fa3"},
+    EXPERT: {label:"EXPERT",  col:"#ff8fa3"},
     MASTER: {label:"MASTER",  col:"#b48cff"},
   },
   menuAudio:null,
@@ -544,15 +544,19 @@ const LiveGame = {
         if(hd.hit === "MISS") continue;
         const t0 = Math.max(hd.t, tNow), t1 = Math.min(hd.end, horizon);
         if(t1 <= t0 - .001) continue;
-        const STEPS = Math.max(2, Math.min(24, Math.ceil((t1 - t0) / .05)));
+        /* sample AT the polyline knots (fixed in time, so they scroll
+           smoothly) — a uniform grid re-anchored to the moving window makes
+           curvy sections shimmer as the sample points slide along the curve */
         const leftPts = [], rightPts = [];
-        for(let i = 0; i <= STEPS; i++){
-          const t = t0 + (t1 - t0) * i / STEPS;
+        const push = t => {
           const [l, r] = holdAt(hd.pts, t);
           const y = Math.max(-20, yOf(t));
           leftPts.push([xOf(l), y]);
           rightPts.push([xOf(r + 1), y]);
-        }
+        };
+        push(t0);
+        for(const p of hd.pts) if(p[0] > t0 && p[0] < t1) push(p[0]);
+        push(t1);
         ctx.fillStyle = hd.hit ? "rgba(127,212,240,.5)" : "rgba(127,212,240,.3)";
         ctx.beginPath();
         ctx.moveTo(leftPts[0][0], leftPts[0][1]);
