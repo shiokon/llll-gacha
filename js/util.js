@@ -53,7 +53,8 @@ const CARD_BY_S = {};
 DB.cards.forEach(c => CARD_BY_S[c.s] = c);
 
 /* banners actually released (placeholder entries carry far-future dates) */
-const TODAY = new Date().toISOString().slice(0,10);
+const _now = new Date();
+const TODAY = `${_now.getFullYear()}-${String(_now.getMonth()+1).padStart(2,"0")}-${String(_now.getDate()).padStart(2,"0")}`;
 const realBanners = () => DB.banners.filter(b => b.start <= TODAY);
 const futureBanners = () => DB.banners.filter(b => b.start > TODAY);
 

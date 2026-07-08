@@ -288,6 +288,16 @@ for cid in sorted({e["c"] for e in cards_out}):
     print("synthesized character:", cid, name)
 
 # ---- banners ----------------------------------------------------------------------
+# birthday banners land here a day behind what's actually shown in-game, so bump
+# just those forward by 1 (other banner types are correct as sourced)
+def plus_one_day(raw):
+    s = str(raw)[:10]
+    if not s:
+        return s
+    from datetime import date, timedelta
+    y, m, d = map(int, s.split("-"))
+    return (date(y, m, d) + timedelta(days=1)).isoformat()
+
 banners_out = []
 for g in gacha_series:
     gid = g["Id"]
@@ -298,12 +308,15 @@ for g in gacha_series:
         p = g.get(f"PickUpCardSeriesId_{i}", 0)
         if p and p in series_in_db:
             picks.append(p)
+    name = g.get("GachaSeriesName", "")
+    is_birthday = "BIRTHDAY" in name.upper()
+    date_fn = plus_one_day if is_birthday else (lambda raw: str(raw)[:10])
     banners_out.append({
         "id": gid,
-        "n": g.get("GachaSeriesName", ""),
+        "n": name,
         "type": g.get("GachaType", 0),
-        "start": str(g.get("StartTime", ""))[:10],
-        "end": str(g.get("EndTime", ""))[:10],
+        "start": date_fn(g.get("StartTime", "")),
+        "end": date_fn(g.get("EndTime", "")),
         "picks": picks,
         "pack": 1 if gid in pack_ids else 0,
         "bgm": g.get("GachaStartBgm", 0),
