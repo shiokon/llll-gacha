@@ -15,6 +15,7 @@ const App = {
 
   go(name){
     if(!this.pages[name]) name = "home";
+    const prev = this.current;
     this.current = name;
     document.querySelectorAll(".nav-btn").forEach(b =>
       b.classList.toggle("active", b.dataset.nav === name));
@@ -23,6 +24,7 @@ const App = {
     /* leaving pages with their own audio */
     if(name !== "jukebox" && Jukebox.audio && !Jukebox.audio.paused){ /* keep playing, it's nice */ }
     if(name !== "gacha" && /^bgm_(gacha_home|collection_gacha)/.test(Audio_.bgmName || "")) Audio_.stopBgm();
+    if(prev === "gacha" && name !== "gacha"){ Gacha._listScroll = 0; Gacha.banner = null; }
     if(name !== "live") LiveStage.leave();
     this.pages[name](view);
     scrollTo({top:0, behavior:"instant"});
