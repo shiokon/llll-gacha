@@ -21,24 +21,35 @@ const LiveStage = {
 
   appealOf(c){ return c.stat[4] + c.stat[5] + c.stat[6] + Math.round(c.stat[7]/2); },
 
-  /* resolve the current unit → 3 card objects (guests if collection is empty) */
+  UNIT_SIZE:6,
+  SUPPORT_PCT:.06,          /* each owned card outside the main 6 lends this slice of its appeal */
+
+  /* resolve the current unit → 6 card objects (guests fill empty slots) */
   unitCards(){
     const owned = DB.cards.filter(c => State.owned[c.s]);
     let unit = (State.liveUnit || []).map(s => CARD_BY_S[s]).filter(c => c && State.owned[c.s]);
-    if(unit.length < 3){
+    if(unit.length < this.UNIT_SIZE){
       const rest = owned.filter(c => !unit.includes(c))
         .sort((a,b) => this.appealOf(b) - this.appealOf(a));
-      unit = unit.concat(rest.slice(0, 3 - unit.length));
+      unit = unit.concat(rest.slice(0, this.UNIT_SIZE - unit.length));
     }
-    if(unit.length < 3){
-      const guests = DB.cards.filter(c => c.r === 3 && !unit.includes(c)).slice(0, 3 - unit.length);
+    if(unit.length < this.UNIT_SIZE){
+      const guests = DB.cards.filter(c => c.r === 3 && !unit.includes(c)).slice(0, this.UNIT_SIZE - unit.length);
       guests.forEach(g => g._guest = true);
       unit = unit.concat(guests);
     }
-    return unit.slice(0, 3);
+    return unit.slice(0, this.UNIT_SIZE);
+  },
+  /* main 6 count in full; every other owned card kicks in a small % of its
+     appeal too, so growing the whole collection keeps paying off */
+  supportAppeal(unit){
+    const inUnit = new Set(unit.map(c => c.s));
+    return DB.cards.filter(c => State.owned[c.s] && !inUnit.has(c.s))
+      .reduce((s,c) => s + this.appealOf(c) * this.SUPPORT_PCT, 0);
   },
   unitAppeal(unit){
-    return unit.reduce((s,c) => s + Math.round(this.appealOf(c) * (c._guest ? .5 : 1)), 0);
+    const main = unit.reduce((s,c) => s + Math.round(this.appealOf(c) * (c._guest ? .5 : 1)), 0);
+    return Math.round(main + this.supportAppeal(unit));
   },
 
   render(root){
@@ -48,6 +59,7 @@ const LiveStage = {
     const unitRow = h("div",{class:"ls-unit"});
     const drawUnit = () => {
       const u = this.unitCards();
+      const support = Math.round(this.supportAppeal(u));
       unitRow.replaceChildren(
         h("div",{class:"ls-unit-cards"},
           u.map(c => h("div",{class:"ls-ucard", title:c.n, onclick:() => this.unitPicker(drawUnit)},
@@ -56,6 +68,7 @@ const LiveStage = {
           ))),
         h("div",{class:"ls-unit-meta"},
           h("div",{class:"ls-appeal"},t("live.appeal"), h("b", this.unitAppeal(u).toLocaleString())),
+          support ? h("small",{class:"ls-support"},t("live.support", support.toLocaleString())) : null,
           h("button",{class:"chip", onclick:() => this.unitPicker(drawUnit)},t("live.edit")),
         ),
       );
@@ -138,8 +151,11 @@ const LiveStage = {
         h("small",t("live.small", songs.length))),
       statsEl,
       h("div",{class:"ls-head"},
-        unitRow, speedCtl,
-        h("div",{class:"ls-help"},t("live.help")),
+        unitRow,
+        h("div",{class:"ls-side"},
+          speedCtl,
+          h("div",{class:"ls-help"}, h("div",t("live.help")), h("div",t("live.helpSp"))),
+        ),
       ),
       diffRow, grid,
     ].filter(Boolean));
@@ -158,7 +174,7 @@ const LiveStage = {
       gridEl.replaceChildren(...owned.map(c =>
         h("div",{class:"ls-pick" + (sel.includes(c.s) ? " on" : ""), onclick:() => {
             if(sel.includes(c.s)) sel = sel.filter(s => s !== c.s);
-            else { if(sel.length >= 3) sel.shift(); sel.push(c.s); }
+            else { if(sel.length >= this.UNIT_SIZE) sel.shift(); sel.push(c.s); }
             draw();
           }},
           h("img",{src:IMG.thumb(c.th), loading:"lazy"}),
@@ -291,11 +307,22 @@ const LiveGame = {
     };
     /* scoring: an all-PERFECT run earns exactly 1,000,000 base points,
        then multipliers — chart difficulty (note density; the data ships no
-       level values) and unit appeal — scale it. Combo never affects score. */
+       level values) and unit appeal (main 6 + a slice of the rest of the
+       collection, see LiveStage.unitAppeal) — scale it. Combo never affects
+       score. Misses are penalized by RATE, not raw count: a flat per-miss
+       penalty would let dense MASTER charts (hundreds of notes) shrug off
+       far more misses than a sparse NORMAL chart before it shows up as a
+       percentage of the score, letting sloppy hard-chart runs out-score
+       clean easy-chart ones purely from note-count dilution. */
     const chartSpan = Math.max(1, chartEnd - (notes.length ? notes[0].t : 0));
     const diffMul = 1 + notes.length / chartSpan * .18;   /* NORMAL ≈×1.2 … MASTER ≈×2.3 */
-    const appealMul = 1 + appeal / 64000;                 /* best possible unit ≈×2.0 */
-    const missMul = () => 1 / (1 + .08 * Math.log(1 + G.counts.MISS));
+    const appealMul = 1 + appeal / 250000;                /* stacked collection ≈×3-4 */
+    const missMul = () => Math.exp(-3 * G.counts.MISS / notes.length);
+    /* SPECIAL gauge fills a fixed amount per note hit (not per % of the
+       chart), so it's charged by real elapsed time at the chart's note
+       rate — denser charts (HARD/EXPERT/MASTER) genuinely fill it faster
+       and earn more ×1.5 fever windows per song than sparse ones. */
+    const SP_HITS_NEEDED = 60;
     const OFFSET = .045;
     const APPR = LiveStage.approach();
     let clockBase = 0, useAudioClock = true;
@@ -327,7 +354,7 @@ const LiveGame = {
       G.counts[j.n]++; G.judged++;
       G.combo++; G.maxCombo = Math.max(G.maxCombo, G.combo);
       G.weight += j.w;
-      G.sp = Math.min(1, G.sp + 1.15 / (G.totalWeight * .5));
+      G.sp = Math.min(1, G.sp + 1 / SP_HITS_NEEDED);
       spFill.style.width = G.sp * 100 + "%";
       spBtn.classList.toggle("ready", G.sp >= 1);
       addScore(j.w);

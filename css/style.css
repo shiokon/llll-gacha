@@ -600,7 +600,8 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
   /* live: gameplay */
   .lg-score{font-size:16px;min-width:80px}
   .lg-res-rank{font-size:76px}
-  .lg-unit img{width:38px;height:38px}
+  .lg-unit{max-width:140px}
+  .lg-unit img{width:26px;height:26px}
   .lg-sp{padding:9px 20px;font-size:11px}
   .lg-bottom{padding:8px 12px calc(10px + env(safe-area-inset-bottom,0px))}
 }
@@ -630,18 +631,20 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 .ls-top-d{font-family:Jost,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;flex:none}
 .ls-top-s{font-family:Jost,sans-serif;font-weight:600;color:#fff;margin-left:auto;padding-left:14px}
 .ls-head{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:14px 0}
-.ls-unit{display:flex;align-items:center;gap:14px}
-.ls-unit-cards{display:flex;gap:8px}
-.ls-ucard{position:relative;width:58px;height:58px;border-radius:12px;overflow:hidden;cursor:pointer;
+.ls-unit{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.ls-unit-cards{display:flex;gap:6px}
+.ls-ucard{position:relative;width:46px;height:46px;border-radius:10px;overflow:hidden;cursor:pointer;
   border:2px solid rgba(255,255,255,.2);transition:.2s}
 .ls-ucard:hover{border-color:var(--pink);transform:translateY(-2px)}
 .ls-ucard img{width:100%;height:100%;object-fit:cover}
-.ls-guest{position:absolute;bottom:0;left:0;right:0;font-size:8px;font-weight:800;text-align:center;
-  background:rgba(14,15,28,.8);color:var(--ink2);letter-spacing:.08em}
+.ls-guest{position:absolute;bottom:0;left:0;right:0;font-size:7px;font-weight:800;text-align:center;
+  background:rgba(14,15,28,.8);color:var(--ink2);letter-spacing:.06em}
 .ls-unit-meta{display:flex;flex-direction:column;gap:6px}
 .ls-appeal{font-size:12px;color:var(--ink2)}
 .ls-appeal b{font-family:Jost,sans-serif;font-size:17px;color:var(--gold);margin-left:4px}
-.ls-help{font-size:12px;color:var(--ink2);margin-left:auto}
+.ls-support{font-size:10.5px;color:var(--ink2);opacity:.75}
+.ls-side{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:8px;max-width:360px}
+.ls-help{font-size:12px;color:var(--ink2);text-align:right;display:flex;flex-direction:column;gap:2px}
 .ls-diffs{display:flex;gap:8px;margin-bottom:16px}
 .ls-diff{font-family:Jost,sans-serif;font-size:13px;font-weight:800;letter-spacing:.1em;
   padding:8px 22px;border-radius:999px;cursor:pointer;transition:.2s;
@@ -705,8 +708,8 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 .lg-zone.on{background:linear-gradient(180deg,transparent 60%,rgba(255,255,255,.07))}
 .lg-bottom{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;gap:14px;
   padding:10px 18px 14px;z-index:5}
-.lg-unit{display:flex;gap:7px}
-.lg-unit img{width:44px;height:44px;border-radius:10px;border:2px solid rgba(255,255,255,.25)}
+.lg-unit{display:flex;gap:5px;flex-wrap:wrap;max-width:180px}
+.lg-unit img{width:34px;height:34px;border-radius:9px;border:2px solid rgba(255,255,255,.25)}
 .lg-sp{margin-left:auto;position:relative;font-family:Jost,sans-serif;font-size:12px;font-weight:800;
   letter-spacing:.14em;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2);
   border-radius:999px;padding:10px 26px;cursor:pointer;overflow:hidden;transition:.2s}
@@ -721,12 +724,13 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
   text-shadow:0 0 34px rgba(255,158,198,.8);animation:countin .5s ease}
 @keyframes countin{from{opacity:0;transform:scale(1.35)}to{opacity:1;transform:scale(1)}}
 .lg-cutin{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
-.lg-cutin img{position:absolute;top:56%;left:14%;height:46%;opacity:.9;transform:translate(-50%,-50%) rotate(-3deg);
-  border-radius:18px;border:3px solid rgba(255,217,122,.9);box-shadow:0 0 60px rgba(255,217,122,.55);
+.lg-cutin img{position:absolute;top:60%;left:9%;height:34%;opacity:.4;filter:brightness(.55) saturate(.85);
+  transform:translate(-50%,-50%) rotate(-3deg);
+  border-radius:18px;border:3px solid rgba(255,217,122,.5);box-shadow:0 0 24px rgba(255,217,122,.22);
   animation:cutin 2.2s ease forwards}
 @keyframes cutin{0%{opacity:0;transform:translate(-130%,-50%) rotate(-8deg) scale(.9)}
-  14%{opacity:.9;transform:translate(-50%,-50%) rotate(-3deg) scale(1)}
-  86%{opacity:.9;transform:translate(-46%,-50%) rotate(-2.4deg) scale(1.015)}
+  14%{opacity:.4;transform:translate(-50%,-50%) rotate(-3deg) scale(1)}
+  86%{opacity:.4;transform:translate(-46%,-50%) rotate(-2.4deg) scale(1.015)}
   100%{opacity:0;transform:translate(-30%,-50%) rotate(0deg) scale(1.05)}}
 .lg-cutin span{position:absolute;top:12%;left:14%;transform:translateX(-50%);
   font-family:Jost,sans-serif;font-size:17px;font-weight:800;letter-spacing:.24em;color:#ffd97a;
