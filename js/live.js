@@ -8,6 +8,7 @@
 
 const LiveStage = {
   diff:"NORMAL",
+  idolArt:false,
   DIFFS:{
     NORMAL: {label:"NORMAL",  col:"#7fd4f0"},
     HARD:   {label:"HARD",    col:"#ffd066"},
@@ -20,6 +21,15 @@ const LiveStage = {
   approach(){ return 2.8 / this.speed(); },
 
   appealOf(c){ return c.stat[4] + c.stat[5] + c.stat[6] + Math.round(c.stat[7]/2); },
+
+  /* thumb for the unit's tiny squares — same idol/normal toggle as the gallery */
+  thumbOf(c){
+    if(this.idolArt){
+      const idol = (c.arts || []).find(a => a % 10 !== 0);
+      if(idol) return idol;
+    }
+    return c.th;
+  },
 
   UNIT_SIZE:6,
   SUPPORT_PCT:.06,          /* each owned card outside the main 6 lends this slice of its appeal */
@@ -63,7 +73,7 @@ const LiveStage = {
       unitRow.replaceChildren(
         h("div",{class:"ls-unit-cards"},
           u.map(c => h("div",{class:"ls-ucard", title:c.n, onclick:() => this.unitPicker(drawUnit)},
-            h("img",{src:IMG.thumb(c.th)}),
+            h("img",{src:IMG.thumb(this.thumbOf(c))}),
             c._guest ? h("span",{class:"ls-guest"},"GUEST") : null,
           ))),
         h("div",{class:"ls-unit-meta"},
@@ -113,8 +123,8 @@ const LiveStage = {
           best && best.fc ? h("div",{class:"ls-fc"},"FC") : null,
           h("div",{class:"ls-song-meta"},
             h("div",{class:"ls-song-t"}, m.t),
-            h("div",{class:"ls-song-s"},
-              (DB.units[m.u] || "") + "　♩=" + m.bpm + (notes ? "　♪" + notes : "")),
+            h("div",{class:"ls-song-s"}, DB.units[m.u] || ""),
+            h("div",{class:"ls-song-bpm"}, "♩=" + m.bpm + (notes ? "　♪" + notes : "")),
           ),
         );
       }));
@@ -169,15 +179,20 @@ const LiveStage = {
     const ov = h("div",{class:"ls-picker-ov", onclick:e => { if(e.target === ov) close(); }});
     const gridEl = h("div",{class:"ls-picker-grid"});
     const cnt = h("b", String(sel.length));
+    const idolBtn = h("button",{class:"chip" + (this.idolArt ? " on" : ""), onclick:() => {
+      this.idolArt = !this.idolArt;
+      idolBtn.classList.toggle("on", this.idolArt);
+      draw();
+    }}, t("live.idolArt"));
     const draw = () => {
       cnt.textContent = sel.length;
       gridEl.replaceChildren(...owned.map(c =>
         h("div",{class:"ls-pick" + (sel.includes(c.s) ? " on" : ""), onclick:() => {
             if(sel.includes(c.s)) sel = sel.filter(s => s !== c.s);
-            else { if(sel.length >= this.UNIT_SIZE) sel.shift(); sel.push(c.s); }
+            else if(sel.length < this.UNIT_SIZE) sel.push(c.s);
             draw();
           }},
-          h("img",{src:IMG.thumb(c.th), loading:"lazy"}),
+          h("img",{src:IMG.thumb(this.thumbOf(c)), loading:"lazy"}),
           h("span",{class:"ls-pick-ap"}, this.appealOf(c).toLocaleString()),
         )));
     };
@@ -187,7 +202,9 @@ const LiveStage = {
     };
     draw();
     ov.append(h("div",{class:"ls-picker"},
-      h("div",{class:"ls-picker-head"},t("live.pickerPre"), cnt, t("live.pickerPost"),
+      h("div",{class:"ls-picker-head"},
+        h("span", t("live.pickerPre"), cnt, t("live.pickerPost")),
+        idolBtn,
         h("button",{class:"chip", style:"margin-left:auto", onclick:close},t("live.done"))),
       gridEl,
     ));
@@ -266,7 +283,7 @@ const LiveGame = {
     ov.append(
       h("div",{class:"lg-bottom"},
         h("div",{class:"lg-unit"},
-          unit.map(c => h("img",{src:IMG.thumb(c.th), title:c.n}))),
+          unit.map(c => h("img",{src:IMG.thumb(LiveStage.thumbOf(c)), title:c.n}))),
         spBtn,
         h("button",{class:"lg-quit", title:t("live.quit")},"✕"),
       ),
@@ -462,8 +479,9 @@ const LiveGame = {
       setTimeout(() => ov.classList.remove("fever"), 8000);
       Audio_.se("se_rhythm_slide_0001", .5);
       const c = unit[Math.random() * unit.length | 0];
+      const art = Math.random() < .5 ? c.arts[0] : c.arts[c.arts.length - 1];
       const cut = h("div",{class:"lg-cutin"},
-        h("img",{src:IMG.full(c.arts[c.arts.length - 1])}),
+        h("img",{src:IMG.full(art)}),
         h("span","SPECIAL APPEAL!"));
       ov.append(cut);
       setTimeout(() => cut.remove(), 2200);

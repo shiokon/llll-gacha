@@ -650,16 +650,17 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
   padding:8px 22px;border-radius:999px;cursor:pointer;transition:.2s;
   border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:var(--ink2)}
 .ls-diff.on{background:var(--dc);border-color:var(--dc);color:#151628}
-.ls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.ls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .ls-song{position:relative;display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;
   background:var(--panel);border:1px solid rgba(255,255,255,.08);border-left:3px solid var(--uc);
   cursor:pointer;transition:.18s}
 .ls-song:hover{transform:translateY(-3px);border-color:var(--uc);box-shadow:0 10px 26px rgba(0,0,0,.35)}
 .ls-song img,.ls-nojacket{width:56px;height:56px;border-radius:10px;object-fit:cover;flex:none}
 .ls-nojacket{background:var(--bg2);display:grid;place-items:center;color:var(--ink2)}
-.ls-song-meta{min-width:0;flex:1}
+.ls-song-meta{min-width:0;flex:1;padding-right:4px}
 .ls-song-t{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ls-song-s{font-size:10.5px;color:var(--ink2);margin-top:3px}
+.ls-song-bpm{font-size:10.5px;color:var(--ink2);white-space:nowrap}
 .ls-rank{position:absolute;top:6px;right:8px;font-family:Jost,sans-serif;font-size:15px;font-weight:800;
   width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:rgba(14,15,28,.75)}
 .ls-rank.rS{color:#ffd97a;border:1px solid #ffd97a}
