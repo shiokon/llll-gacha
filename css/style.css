@@ -588,6 +588,8 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
   .mem-grid{grid-template-columns:1fr}
 
   /* live: song select */
+  .ls-picker{max-height:85vh}
+  .ls-picker-grid{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px;padding:12px}
   .ls-diffs{flex-wrap:wrap;gap:6px}
   .ls-diff{flex:1;padding:7px 8px;font-size:11.5px;text-align:center}
   .ls-stats{flex-direction:column;gap:10px;padding:12px 14px}
@@ -676,10 +678,10 @@ body.lang-en .ccard.unowned::after{content:"UNOWNED"}
 .ls-picker-head{display:flex;align-items:center;gap:6px;padding:14px 18px;font-weight:700;font-size:14px;
   border-bottom:1px solid rgba(255,255,255,.08)}
 .ls-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(72px,1fr));gap:8px;
-  padding:14px 18px;overflow-y:auto}
-.ls-pick{position:relative;border-radius:10px;overflow:hidden;cursor:pointer;
-  border:2px solid transparent;transition:.15s}
-.ls-pick img{width:100%;display:block}
+  padding:14px 18px;overflow-y:auto;flex:1;min-height:0}
+.ls-pick{position:relative;border-radius:10px;overflow:hidden;cursor:pointer;aspect-ratio:512/704;
+  background:var(--bg2);border:2px solid transparent;transition:.15s}
+.ls-pick img{width:100%;height:100%;object-fit:cover;display:block}
 .ls-pick.on{border-color:var(--pink);box-shadow:0 0 14px rgba(255,158,198,.45)}
 .ls-pick-ap{position:absolute;bottom:0;left:0;right:0;font-size:9px;font-family:Jost,sans-serif;
   text-align:center;background:rgba(14,15,28,.78);padding:1px 0}

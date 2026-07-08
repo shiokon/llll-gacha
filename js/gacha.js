@@ -116,7 +116,7 @@ const Gacha = {
       const std = t.key === "LR" || t.key === "BR"
         ? []                                       /* rate-ups only, no 50/50 */
         : t.key === "UR" || t.key === "SR"
-        ? DB.cards.filter(c => t.rars.includes(c.r) && c.lt === 0 && !b.picks.includes(c.s))
+        ? DB.cards.filter(c => t.rars.includes(c.r) && (c.lt === 0 || c.lt === 101) && !b.picks.includes(c.s))
         : DB.cards.filter(c => t.rars.includes(c.r) && !b.picks.includes(c.s));
       if(!pick.length && !std.length) continue;
       pool.tiers.push({...t, pick, std});
